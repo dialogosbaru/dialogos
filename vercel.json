@@ -1,7 +1,7 @@
 {
   "buildCommand": "pnpm build",
-  "outputDirectory": "dist",
-  "framework": "vite",
+  "outputDirectory": "dist/public",
+  "framework": null,
   "devCommand": "pnpm dev",
   "env": {
     "GEMINI_API_KEY": "@gemini_api_key",
@@ -9,18 +9,15 @@
     "OWNER_NAME": "@owner_name"
   },
   "functions": {
-    "server/index.ts": {
-      "runtime": "nodejs20.x"
+    "api/index.ts": {
+      "runtime": "nodejs20.x",
+      "maxDuration": 60
     }
   },
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "/server"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "/(.*)",
+      "dest": "/api"
     }
   ]
 }
