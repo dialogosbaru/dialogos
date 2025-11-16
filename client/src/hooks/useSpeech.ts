@@ -96,9 +96,9 @@ export function useSpeech() {
     }
   }, []);
 
-  // Hablar (TTS)
+  // Hablar (TTS) con parámetros de voz ajustables
   const speak = useCallback(
-    (text: string) => {
+    (text: string, voiceProfile?: { rate: number; pitch: number; volume: number }) => {
       try {
         // Verificar que el navegador soporta síntesis de voz
         if (!window.speechSynthesis) {
@@ -111,9 +111,10 @@ export function useSpeech() {
 
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = language === 'es' ? 'es-ES' : 'en-US';
-        utterance.rate = 1;
-        utterance.pitch = 1;
-        utterance.volume = 1;
+        // Usar parámetros de voz personalizados si se proporcionan
+        utterance.rate = voiceProfile?.rate || 1;
+        utterance.pitch = voiceProfile?.pitch || 1;
+        utterance.volume = voiceProfile?.volume || 1;
 
         utterance.onstart = () => {
           setIsSpeaking(true);

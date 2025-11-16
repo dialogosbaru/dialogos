@@ -71,5 +71,12 @@
 - [x] Guardar respuestas en el perfil del usuario
 - [x] Usar respuestas para personalizar conversaciones futuras
 
+## Ajuste de Voz Segun Estado Emocional (Fase 6)
+- [x] Mejorar deteccion de emociones del usuario
+- [x] Crear perfiles de voz para cada emocion
+- [x] Implementar ajuste dinamico de parametros de voz (velocidad, tono)
+- [x] Guardar estado emocional en la base de datos
+- [x] Adaptar respuestas de Leo segun el estado emocional
+
 ## Bugs Reportados - Fase Gemini
 - [x] Corregir error de autenticación en Gemini API (clave API no se pasa correctamente)

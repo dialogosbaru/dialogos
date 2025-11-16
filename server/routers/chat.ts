@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { publicProcedure, router } from '../_core/trpc';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { getUserProfile } from '../db';
+import { detectEmotionAndGetVoiceProfile, analyzeConversationEmotion } from '../utils/emotionDetection';
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
@@ -188,9 +189,17 @@ export const chatRouter = router({
         console.log('Received response from Gemini successfully');
         console.log('Response preview:', responseText.substring(0, 100));
 
+        // Detectar la emoción del usuario para ajustar la voz
+        const userEmotion = analyzeConversationEmotion(input.conversationHistory);
+        const voiceProfile = detectEmotionAndGetVoiceProfile(input.message);
+        
+        console.log('Detected user emotion:', userEmotion);
+        console.log('Voice profile:', voiceProfile);
+
         return {
           text: responseText,
-          emotion: 'neutral',
+          emotion: userEmotion,
+          voiceProfile: voiceProfile,
           userProfile: userProfile,
         };
       } catch (error) {
