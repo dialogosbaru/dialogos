@@ -3,22 +3,5 @@
   "outputDirectory": "dist/public",
   "framework": null,
   "devCommand": "pnpm dev",
-  "installCommand": "pnpm install",
-  "functions": {
-    "api/index.ts": {
-      "runtime": "nodejs18.x",
-      "memory": 1024,
-      "maxDuration": 60
-    }
-  },
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
-    }
-  ]
+  "installCommand": "pnpm install"
 }
