@@ -49,5 +49,21 @@
 - [ ] Agregar memoria persistente mejorada
 - [ ] Pruebas de integración y optimización
 
+## Mejora de Personalizacion y Preguntas Inteligentes (Fase 3)
+- [x] Mejorar el prompt de Leo para hacer preguntas sobre gustos personales
+- [x] Implementar sistema de perfil de usuario (deportes, equipos, motivaciones, etc.)
+- [x] Crear logica de preguntas contextuales y estrategicas
+- [ ] Agregar memoria persistente de informacion personal del usuario
+- [ ] Implementar seguimiento de temas de interes del usuario
+- [ ] Crear respuestas personalizadas basadas en el perfil del usuario
+
+## Persistencia de Conversaciones en Base de Datos (Fase 4)
+- [x] Crear esquema de base de datos para conversaciones y perfiles
+- [x] Implementar guardado automatico de mensajes
+- [x] Crear sistema de recuperacion de historial completo
+- [x] Mejorar analisis de perfil usando historial historico
+- [x] Implementar seguimiento de preferencias del usuario
+- [ ] Agregar sincronizacion entre dispositivos
+
 ## Bugs Reportados - Fase Gemini
 - [x] Corregir error de autenticación en Gemini API (clave API no se pasa correctamente)

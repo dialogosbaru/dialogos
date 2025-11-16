@@ -90,3 +90,166 @@ export async function getUserByOpenId(openId: string) {
 }
 
 // TODO: add feature queries here as your schema grows.
+
+// Funciones para conversaciones
+export async function saveMessage(
+  conversationId: number,
+  sender: "user" | "leo",
+  text: string,
+  emotion?: string
+): Promise<void> {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot save message: database not available");
+    return;
+  }
+
+  try {
+    const { messages } = await import("../drizzle/schema");
+    await db.insert(messages).values({
+      conversationId,
+      sender,
+      text,
+      emotion,
+    });
+  } catch (error) {
+    console.error("[Database] Failed to save message:", error);
+    throw error;
+  }
+}
+
+export async function getConversationHistory(conversationId: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get conversation: database not available");
+    return [];
+  }
+
+  try {
+    const { messages } = await import("../drizzle/schema");
+    const result = await db
+      .select()
+      .from(messages)
+      .where(eq(messages.conversationId, conversationId))
+      .orderBy(messages.createdAt);
+    return result;
+  } catch (error) {
+    console.error("[Database] Failed to get conversation history:", error);
+    return [];
+  }
+}
+
+export async function createConversation(userId: number, title?: string) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot create conversation: database not available");
+    return null;
+  }
+
+  try {
+    const { conversations } = await import("../drizzle/schema");
+    const result = await db.insert(conversations).values({
+      userId,
+      title: title || `Conversation ${new Date().toLocaleDateString()}`,
+    });
+    return result;
+  } catch (error) {
+    console.error("[Database] Failed to create conversation:", error);
+    throw error;
+  }
+}
+
+export async function getUserConversations(userId: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get conversations: database not available");
+    return [];
+  }
+
+  try {
+    const { conversations } = await import("../drizzle/schema");
+    const result = await db
+      .select()
+      .from(conversations)
+      .where(eq(conversations.userId, userId))
+      .orderBy(conversations.updatedAt);
+    return result;
+  } catch (error) {
+    console.error("[Database] Failed to get user conversations:", error);
+    return [];
+  }
+}
+
+// Funciones para perfiles de usuario
+export async function saveUserProfile(userId: number, profileData: any): Promise<void> {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot save user profile: database not available");
+    return;
+  }
+
+  try {
+    const { userProfiles } = await import("../drizzle/schema");
+    const existingProfile = await db
+      .select()
+      .from(userProfiles)
+      .where(eq(userProfiles.userId, userId))
+      .limit(1);
+
+    if (existingProfile.length > 0) {
+      // Update existing profile
+      await db
+        .update(userProfiles)
+        .set({
+          ...profileData,
+          hobbies: profileData.hobbies ? JSON.stringify(profileData.hobbies) : null,
+          motivations: profileData.motivations ? JSON.stringify(profileData.motivations) : null,
+          interests: profileData.interests ? JSON.stringify(profileData.interests) : null,
+        })
+        .where(eq(userProfiles.userId, userId));
+    } else {
+      // Create new profile
+      await db.insert(userProfiles).values({
+        userId,
+        ...profileData,
+        hobbies: profileData.hobbies ? JSON.stringify(profileData.hobbies) : null,
+        motivations: profileData.motivations ? JSON.stringify(profileData.motivations) : null,
+        interests: profileData.interests ? JSON.stringify(profileData.interests) : null,
+      });
+    }
+  } catch (error) {
+    console.error("[Database] Failed to save user profile:", error);
+    throw error;
+  }
+}
+
+export async function getUserProfile(userId: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get user profile: database not available");
+    return null;
+  }
+
+  try {
+    const { userProfiles } = await import("../drizzle/schema");
+    const result = await db
+      .select()
+      .from(userProfiles)
+      .where(eq(userProfiles.userId, userId))
+      .limit(1);
+
+    if (result.length > 0) {
+      const profile = result[0];
+      return {
+        ...profile,
+        hobbies: profile.hobbies ? JSON.parse(profile.hobbies) : [],
+        motivations: profile.motivations ? JSON.parse(profile.motivations) : [],
+        interests: profile.interests ? JSON.parse(profile.interests) : [],
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error("[Database] Failed to get user profile:", error);
+    return null;
+  }
+}

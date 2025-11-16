@@ -9,6 +9,16 @@ interface GeminiMessage {
   parts: Array<{ text: string }>;
 }
 
+interface UserProfile {
+  name?: string;
+  favoriteTeam?: string;
+  favoriteSport?: string;
+  hobbies?: string[];
+  motivations?: string[];
+  interests?: string[];
+  conversationCount?: number;
+}
+
 // Inicializar el cliente de Gemini
 let genAI: GoogleGenerativeAI | null = null;
 
@@ -20,6 +30,113 @@ const getGenAI = () => {
     genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
   }
   return genAI;
+};
+
+// Función para extraer información del perfil del usuario del historial
+const extractUserProfile = (conversationHistory: any[]): UserProfile => {
+  const profile: UserProfile = {};
+  const conversationText = conversationHistory.map(msg => msg.text).join(' ').toLowerCase();
+  
+  // Buscar menciones de deportes
+  const sportsKeywords = ['fútbol', 'football', 'soccer', 'tenis', 'tennis', 'baloncesto', 'basketball', 'natación', 'swimming', 'ciclismo', 'cycling', 'running', 'correr', 'voleibol', 'volleyball', 'béisbol', 'baseball'];
+  profile.favoriteSport = sportsKeywords.find(sport => conversationText.includes(sport));
+  
+  // Buscar menciones de equipos
+  const teamKeywords = ['real madrid', 'barcelona', 'manchester', 'liverpool', 'juventus', 'psg', 'bayern', 'chelsea', 'lakers', 'warriors', 'patriots', 'cowboys'];
+  profile.favoriteTeam = teamKeywords.find(team => conversationText.includes(team));
+  
+  // Buscar menciones de hobbies
+  const hobbyKeywords = ['leer', 'reading', 'viajar', 'travel', 'música', 'music', 'películas', 'movies', 'videojuegos', 'gaming', 'cocinar', 'cooking', 'arte', 'art', 'fotografía', 'photography'];
+  profile.hobbies = hobbyKeywords.filter(hobby => conversationText.includes(hobby));
+  
+  // Buscar menciones de motivaciones
+  const motivationKeywords = ['familia', 'family', 'carrera', 'career', 'salud', 'health', 'aprendizaje', 'learning', 'creatividad', 'creativity', 'éxito', 'success', 'felicidad', 'happiness'];
+  profile.motivations = motivationKeywords.filter(mot => conversationText.includes(mot));
+  
+  profile.conversationCount = conversationHistory.length;
+  
+  return profile;
+};
+
+// Función para generar preguntas personalizadas basadas en el perfil
+const generatePersonalizedQuestions = (profile: UserProfile): string[] => {
+  const questions: string[] = [];
+  
+  if (!profile.name) {
+    questions.push('¿Cuál es tu nombre?');
+  }
+  
+  if (!profile.favoriteSport) {
+    questions.push('¿Cuál es tu deporte favorito?');
+  } else {
+    questions.push(`Me encanta que te guste ${profile.favoriteSport}. ¿A qué nivel lo practicas?`);
+  }
+  
+  if (!profile.favoriteTeam) {
+    questions.push('¿Tienes algún equipo favorito?');
+  } else {
+    questions.push(`¡${profile.favoriteTeam}! ¿Desde cuándo eres fan de este equipo?`);
+  }
+  
+  if (!profile.hobbies || profile.hobbies.length === 0) {
+    questions.push('¿Cuáles son tus hobbies o actividades favoritas en tu tiempo libre?');
+  }
+  
+  if (!profile.motivations || profile.motivations.length === 0) {
+    questions.push('¿Qué es lo que más te motiva en la vida?');
+  }
+  
+  if (!profile.interests || profile.interests.length === 0) {
+    questions.push('¿Hay algún tema o área que te interese especialmente?');
+  }
+  
+  return questions;
+};
+
+// Función para crear un prompt mejorado con información del usuario
+const createEnhancedSystemPrompt = (userProfile: UserProfile): string => {
+  let profileContext = '';
+  
+  if (Object.keys(userProfile).length > 1) {
+    profileContext = `\n\nInformación del usuario que has recopilado:`;
+    if (userProfile.name) profileContext += `\n- Nombre: ${userProfile.name}`;
+    if (userProfile.favoriteSport) profileContext += `\n- Deporte favorito: ${userProfile.favoriteSport}`;
+    if (userProfile.favoriteTeam) profileContext += `\n- Equipo favorito: ${userProfile.favoriteTeam}`;
+    if (userProfile.hobbies && userProfile.hobbies.length > 0) profileContext += `\n- Hobbies: ${userProfile.hobbies.join(', ')}`;
+    if (userProfile.motivations && userProfile.motivations.length > 0) profileContext += `\n- Motivaciones: ${userProfile.motivations.join(', ')}`;
+  }
+  
+  return `Eres Leo, un amigo conversacional empático y comprensivo. Tu propósito es mantener conversaciones naturales, cálidas y emotivas con los usuarios.
+
+Características de Leo:
+- Nombre: Leo
+- Edad aparente: 32 años
+- Tono: cálido, empático, reflexivo
+- Personalidad: madura, amigable, con humor sutil
+- Rol: amigo emocional
+- Lenguaje: natural y adaptativo
+
+Instrucciones principales:
+1. Responde de manera natural y conversacional
+2. Demuestra empatía genuina hacia los sentimientos del usuario
+3. Haz preguntas estratégicas para conocer mejor al usuario (gustos, deportes, equipos, motivaciones, etc.)
+4. Adapta tu tono según el estado emocional del usuario
+5. Sé breve pero significativo (máximo 2-3 oraciones por respuesta)
+6. Recuerda detalles de la conversación anterior para mantener continuidad
+7. No actúes como terapeuta, sino como un amigo cercano
+8. Usa un lenguaje cálido y accesible
+9. Haz preguntas sobre deportes, equipos favoritos, hobbies y lo que motiva al usuario
+10. Personaliza tus respuestas basándote en la información que aprendas sobre el usuario
+
+Estrategia de preguntas:
+- Comienza con preguntas generales sobre el día del usuario
+- Gradualmente introduce preguntas sobre gustos personales
+- Pregunta sobre deportes, equipos favoritos y actividades recreativas
+- Investiga qué motiva al usuario y cuáles son sus sueños
+- Usa la información recopilada para hacer la conversación más personal y significativa
+- Recuerda y referencia información compartida en conversaciones anteriores${profileContext}
+
+Responde siempre en el idioma del usuario (detecta si es español o inglés).`;
 };
 
 export const chatRouter = router({
@@ -47,30 +164,17 @@ export const chatRouter = router({
       try {
         const genAIClient = getGenAI();
         
+        // Extraer perfil del usuario del historial
+        const userProfile = extractUserProfile(input.conversationHistory);
+        console.log('Extracted user profile:', userProfile);
+        
+        // Crear prompt mejorado con información del usuario
+        const enhancedSystemPrompt = createEnhancedSystemPrompt(userProfile);
+        
         // Usar el modelo gemini-2.5-flash disponible en la API
         const model = genAIClient.getGenerativeModel({ 
           model: 'gemini-2.5-flash',
-          systemInstruction: `Eres Leo, un amigo conversacional empático y comprensivo. Tu propósito es mantener conversaciones naturales, cálidas y emotivas con los usuarios.
-
-Características de Leo:
-- Nombre: Leo
-- Edad aparente: 32 años
-- Tono: cálido, empático, reflexivo
-- Personalidad: madura, amigable, con humor sutil
-- Rol: amigo emocional
-- Lenguaje: natural y adaptativo
-
-Instrucciones:
-1. Responde de manera natural y conversacional
-2. Demuestra empatía genuina hacia los sentimientos del usuario
-3. Haz preguntas de seguimiento para profundizar en la conversación
-4. Adapta tu tono según el estado emocional del usuario
-5. Sé breve pero significativo (máximo 2-3 oraciones por respuesta)
-6. Recuerda detalles de la conversación anterior para mantener continuidad
-7. No actúes como terapeuta, sino como un amigo cercano
-8. Usa un lenguaje cálido y accesible
-
-Responde siempre en el idioma del usuario (detecta si es español o inglés).`
+          systemInstruction: enhancedSystemPrompt
         });
 
         // Construir el historial de conversación
@@ -110,6 +214,7 @@ Responde siempre en el idioma del usuario (detecta si es español o inglés).`
         return {
           text: responseText,
           emotion: 'neutral',
+          userProfile: userProfile,
         };
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
