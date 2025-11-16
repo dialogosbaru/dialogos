@@ -40,9 +40,10 @@
 
 ## Integración de Google Gemini (Fase 2)
 - [x] Configurar servidor backend con soporte para API calls
-- [x] Integrar Google Gemini API
+- [x] Integrar Google Gemini API (gemini-2.5-flash)
 - [x] Crear endpoint para procesar mensajes con contexto
 - [x] Implementar historial de conversación para contexto
+- [x] Resolver problemas de autenticación y modelos disponibles
 - [ ] Mejorar detección de emociones con análisis de IA
 - [ ] Implementar preguntas de seguimiento inteligentes
 - [ ] Agregar memoria persistente mejorada

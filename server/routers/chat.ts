@@ -1,19 +1,26 @@
 import { z } from 'zod';
 import { publicProcedure, router } from '../_core/trpc';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-
-const getGeminiUrl = () => {
-  if (!GEMINI_API_KEY) {
-    throw new Error('GEMINI_API_KEY is not configured');
-  }
-  return `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-};
 
 interface GeminiMessage {
   role: 'user' | 'model';
   parts: Array<{ text: string }>;
 }
+
+// Inicializar el cliente de Gemini
+let genAI: GoogleGenerativeAI | null = null;
+
+const getGenAI = () => {
+  if (!GEMINI_API_KEY) {
+    throw new Error('GEMINI_API_KEY is not configured');
+  }
+  if (!genAI) {
+    genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+  }
+  return genAI;
+};
 
 export const chatRouter = router({
   message: publicProcedure
@@ -33,23 +40,17 @@ export const chatRouter = router({
     )
     .mutation(async ({ input }) => {
       if (!GEMINI_API_KEY) {
+        console.error('GEMINI_API_KEY is not configured');
         throw new Error('GEMINI_API_KEY is not configured');
       }
 
-      // Construir el historial de conversación para Gemini
-      const conversationHistory: GeminiMessage[] = input.conversationHistory.map((msg) => ({
-        role: msg.sender === 'user' ? 'user' : 'model',
-        parts: [{ text: msg.text }],
-      }));
-
-      // Agregar el nuevo mensaje del usuario
-      conversationHistory.push({
-        role: 'user',
-        parts: [{ text: input.message }],
-      });
-
-      // Sistema prompt para Leo
-      const systemPrompt = `Eres Leo, un amigo conversacional empático y comprensivo. Tu propósito es mantener conversaciones naturales, cálidas y emotivas con los usuarios.
+      try {
+        const genAIClient = getGenAI();
+        
+        // Usar el modelo gemini-2.5-flash disponible en la API
+        const model = genAIClient.getGenerativeModel({ 
+          model: 'gemini-2.5-flash',
+          systemInstruction: `Eres Leo, un amigo conversacional empático y comprensivo. Tu propósito es mantener conversaciones naturales, cálidas y emotivas con los usuarios.
 
 Características de Leo:
 - Nombre: Leo
@@ -69,70 +70,52 @@ Instrucciones:
 7. No actúes como terapeuta, sino como un amigo cercano
 8. Usa un lenguaje cálido y accesible
 
-Responde siempre en el idioma del usuario (detecta si es español o inglés).`;
-
-      try {
-        const GEMINI_API_URL = getGeminiUrl();
-        const response = await fetch(GEMINI_API_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            system_instruction: {
-              parts: {
-                text: systemPrompt,
-              },
-            },
-            contents: conversationHistory,
-            generationConfig: {
-              temperature: 0.9,
-              topK: 40,
-              topP: 0.95,
-              maxOutputTokens: 1024,
-            },
-            safetySettings: [
-              {
-                category: 'HARM_CATEGORY_HARASSMENT',
-                threshold: 'BLOCK_NONE',
-              },
-              {
-                category: 'HARM_CATEGORY_HATE_SPEECH',
-                threshold: 'BLOCK_NONE',
-              },
-              {
-                category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-                threshold: 'BLOCK_NONE',
-              },
-              {
-                category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
-                threshold: 'BLOCK_NONE',
-              },
-            ],
-          }),
+Responde siempre en el idioma del usuario (detecta si es español o inglés).`
         });
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.error('Gemini API error:', errorData);
-          throw new Error(`Gemini API error: ${response.statusText}`);
+        // Construir el historial de conversación
+        // Filtrar para asegurar que el primer mensaje sea del usuario (requerimiento de Gemini)
+        let history: GeminiMessage[] = input.conversationHistory.map((msg) => ({
+          role: msg.sender === 'user' ? 'user' : 'model',
+          parts: [{ text: msg.text }],
+        }));
+        
+        // Si el historial comienza con un mensaje de 'model', removerlo
+        while (history.length > 0 && history[0].role === 'model') {
+          history.shift();
+        }
+        
+        console.log('Conversation history length:', history.length);
+        if (history.length > 0) {
+          console.log('First message role:', history[0].role);
         }
 
-        const data = await response.json();
+        console.log('Starting chat session with Gemini (gemini-2.5-flash)...');
+        
+        // Iniciar una sesión de chat
+        const chat = model.startChat({
+          history: history,
+        });
 
-        if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
-          throw new Error('Invalid response from Gemini API');
-        }
+        console.log('Sending message to Gemini:', input.message);
+        console.log('Using model: gemini-2.5-flash');
+        
+        // Enviar el mensaje
+        const result = await chat.sendMessage(input.message);
+        const responseText = result.response.text();
 
-        const responseText = data.candidates[0].content.parts[0].text;
+        console.log('Received response from Gemini successfully');
+        console.log('Response preview:', responseText.substring(0, 100));
 
         return {
           text: responseText,
           emotion: 'neutral',
         };
       } catch (error) {
-        console.error('Error calling Gemini API:', error);
-        throw new Error('Failed to get response from Gemini API');
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        console.error('Error calling Gemini API:', errorMessage);
+        console.error('Full error:', error);
+        throw new Error(`Failed to get response from Gemini API: ${errorMessage}`);
       }
     }),
 });
