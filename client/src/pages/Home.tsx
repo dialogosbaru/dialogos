@@ -3,17 +3,33 @@ import { ChatBubble } from '@/components/ChatBubble';
 import { ChatHeader } from '@/components/ChatHeader';
 import { ChatInput } from '@/components/ChatInput';
 import { useConversationHistory } from '@/hooks/useConversationHistory';
-import { useLeoResponses } from '@/hooks/useLeoResponses';
 import { useSpeech } from '@/hooks/useSpeech';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { trpc } from '@/lib/trpc';
 
 export default function Home() {
   const { messages, addMessage, clearHistory, isLoading } = useConversationHistory();
-  const { generateResponse, getGreeting } = useLeoResponses();
   const { isListening, isSpeaking, transcript, setTranscript, startListening, stopListening, speak, stopSpeaking } = useSpeech();
   const { t } = useLanguage();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Usar la mutación de tRPC para obtener respuestas de Gemini
+  const { mutate: sendMessageToGemini, isPending: isGeminiLoading } = trpc.chat.message.useMutation({
+    onSuccess: (response) => {
+      // Agregar respuesta de Leo
+      addMessage('leo', response.text);
+      
+      // Hablar la respuesta de Leo
+      if (window.speechSynthesis) {
+        speak(response.text);
+      }
+    },
+    onError: (error) => {
+      console.error('Error getting response from Gemini:', error);
+      addMessage('leo', 'Disculpa, tuve un problema procesando tu mensaje. Intenta de nuevo.');
+    },
+  });
 
   // Scroll al final cuando hay nuevos mensajes
   useEffect(() => {
@@ -23,10 +39,9 @@ export default function Home() {
   // Agregar saludo inicial si no hay mensajes
   useEffect(() => {
     if (!isLoading && messages.length === 0) {
-      const greeting = getGreeting();
-      addMessage('leo', greeting);
+      addMessage('leo', '¡Hola! Soy Leo, tu amigo conversacional. ¿Cómo te sientes hoy?');
     }
-  }, [isLoading, messages.length, getGreeting, addMessage]);
+  }, [isLoading, messages.length, addMessage]);
 
   // Actualizar el input cuando hay transcripción
   useEffect(() => {
@@ -47,17 +62,11 @@ export default function Home() {
         inputRef.current.value = '';
       }
 
-      // Simular pequeño delay para que parezca natural
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      // Generar respuesta de Leo
-      const response = generateResponse(messageText);
-      addMessage('leo', response.text, response.emotion);
-
-      // Hablar la respuesta de Leo (con manejo de errores)
-      if (window.speechSynthesis) {
-        speak(response.text);
-      }
+      // Enviar a Gemini API a través de tRPC
+      sendMessageToGemini({
+        message: messageText,
+        conversationHistory: messages,
+      });
     } catch (error) {
       console.error('Error sending message:', error);
     }
@@ -74,8 +83,7 @@ export default function Home() {
   const handleClearHistory = () => {
     if (confirm('¿Estás seguro de que deseas limpiar el historial de conversación?')) {
       clearHistory();
-      const greeting = getGreeting();
-      addMessage('leo', greeting);
+      addMessage('leo', '¡Hola! Soy Leo, tu amigo conversacional. ¿Cómo te sientes hoy?');
     }
   };
 
@@ -118,6 +126,17 @@ export default function Home() {
               />
             ))
           )}
+          {isGeminiLoading && (
+            <div className="flex gap-3 mb-4">
+              <div className="bg-card text-card-foreground rounded-2xl rounded-bl-none px-4 py-3 shadow-sm">
+                <div className="flex gap-2 items-center">
+                  <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                </div>
+              </div>
+            </div>
+          )}
           <div ref={messagesEndRef} />
         </div>
       </div>
@@ -129,6 +148,7 @@ export default function Home() {
         onStartListening={handleStartListening}
         onStopListening={handleStopListening}
         isListening={isListening}
+        isSending={isGeminiLoading}
         placeholder={t('chat.placeholder')}
       />
     </div>

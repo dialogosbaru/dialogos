@@ -36,3 +36,14 @@
 ## Bugs Reportados
 - [x] Corregir error de refs en DropdownMenuTrigger con Button component
 - [x] Corregir error de TTS en useSpeech hook
+
+
+## Integración de Google Gemini (Fase 2)
+- [x] Configurar servidor backend con soporte para API calls
+- [x] Integrar Google Gemini API
+- [x] Crear endpoint para procesar mensajes con contexto
+- [x] Implementar historial de conversación para contexto
+- [ ] Mejorar detección de emociones con análisis de IA
+- [ ] Implementar preguntas de seguimiento inteligentes
+- [ ] Agregar memoria persistente mejorada
+- [ ] Pruebas de integración y optimización
