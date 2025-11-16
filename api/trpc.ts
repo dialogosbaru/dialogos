@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import { appRouter } from "../server/routers.js";
-import { createContext } from "../server/_core/context";
+import { createContext } from "../server/_core/context.js";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Convert Vercel request to Fetch API Request
