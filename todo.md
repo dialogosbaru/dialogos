@@ -31,3 +31,7 @@
 - [ ] Optimizar rendimiento
 - [ ] Preparar para despliegue en Vercel
 - [ ] Crear archivo .gitignore y configuración de GitHub
+
+
+## Bugs Reportados
+- [x] Corregir error de refs en DropdownMenuTrigger con Button component
