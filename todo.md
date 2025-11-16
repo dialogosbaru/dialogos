@@ -78,5 +78,13 @@
 - [x] Guardar estado emocional en la base de datos
 - [x] Adaptar respuestas de Leo segun el estado emocional
 
+## Despliegue en GitHub y Vercel (Fase 7)
+- [ ] Inicializar repositorio Git local
+- [ ] Crear repositorio en GitHub
+- [ ] Subir código a GitHub
+- [ ] Conectar repositorio a Vercel
+- [ ] Configurar variables de entorno en Vercel
+- [ ] Desplegar en Vercel
+
 ## Bugs Reportados - Fase Gemini
 - [x] Corregir error de autenticación en Gemini API (clave API no se pasa correctamente)
