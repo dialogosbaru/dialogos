@@ -39,22 +39,28 @@ export default function Home() {
     const messageText = transcript.trim() || inputRef.current?.value.trim();
     if (!messageText) return;
 
-    // Agregar mensaje del usuario
-    addMessage('user', messageText);
-    setTranscript('');
-    if (inputRef.current) {
-      inputRef.current.value = '';
+    try {
+      // Agregar mensaje del usuario
+      addMessage('user', messageText);
+      setTranscript('');
+      if (inputRef.current) {
+        inputRef.current.value = '';
+      }
+
+      // Simular pequeño delay para que parezca natural
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      // Generar respuesta de Leo
+      const response = generateResponse(messageText);
+      addMessage('leo', response.text, response.emotion);
+
+      // Hablar la respuesta de Leo (con manejo de errores)
+      if (window.speechSynthesis) {
+        speak(response.text);
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
     }
-
-    // Simular pequeño delay para que parezca natural
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    // Generar respuesta de Leo
-    const response = generateResponse(messageText);
-    addMessage('leo', response.text, response.emotion);
-
-    // Hablar la respuesta de Leo
-    speak(response.text);
   };
 
   const handleStartListening = () => {

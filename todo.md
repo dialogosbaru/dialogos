@@ -35,3 +35,4 @@
 
 ## Bugs Reportados
 - [x] Corregir error de refs en DropdownMenuTrigger con Button component
+- [x] Corregir error de TTS en useSpeech hook

@@ -99,37 +99,50 @@ export function useSpeech() {
   // Hablar (TTS)
   const speak = useCallback(
     (text: string) => {
-      // Cancelar cualquier síntesis anterior
-      window.speechSynthesis.cancel();
+      try {
+        // Verificar que el navegador soporta síntesis de voz
+        if (!window.speechSynthesis) {
+          console.warn('Speech Synthesis not supported in this browser');
+          return;
+        }
 
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = language === 'es' ? 'es-ES' : 'en-US';
-      utterance.rate = 1;
-      utterance.pitch = 1;
-      utterance.volume = 1;
+        // Cancelar cualquier síntesis anterior
+        window.speechSynthesis.cancel();
 
-      utterance.onstart = () => {
-        setIsSpeaking(true);
-      };
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = language === 'es' ? 'es-ES' : 'en-US';
+        utterance.rate = 1;
+        utterance.pitch = 1;
+        utterance.volume = 1;
 
-      utterance.onend = () => {
+        utterance.onstart = () => {
+          setIsSpeaking(true);
+        };
+
+        utterance.onend = () => {
+          setIsSpeaking(false);
+        };
+
+        utterance.onerror = (event: any) => {
+          setIsSpeaking(false);
+          console.error('TTS error:', event.error || 'Unknown error');
+        };
+
+        utteranceRef.current = utterance;
+        window.speechSynthesis.speak(utterance);
+      } catch (error) {
+        console.error('Error in speak function:', error);
         setIsSpeaking(false);
-      };
-
-      utterance.onerror = () => {
-        setIsSpeaking(false);
-        console.error('TTS error');
-      };
-
-      utteranceRef.current = utterance;
-      window.speechSynthesis.speak(utterance);
+      }
     },
     [language]
   );
 
   // Detener síntesis de voz
   const stopSpeaking = useCallback(() => {
-    window.speechSynthesis.cancel();
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
     setIsSpeaking(false);
   }, []);
 
