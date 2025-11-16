@@ -2,7 +2,13 @@ import { z } from 'zod';
 import { publicProcedure, router } from '../_core/trpc';
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+
+const getGeminiUrl = () => {
+  if (!GEMINI_API_KEY) {
+    throw new Error('GEMINI_API_KEY is not configured');
+  }
+  return `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+};
 
 interface GeminiMessage {
   role: 'user' | 'model';
@@ -66,6 +72,7 @@ Instrucciones:
 Responde siempre en el idioma del usuario (detecta si es español o inglés).`;
 
       try {
+        const GEMINI_API_URL = getGeminiUrl();
         const response = await fetch(GEMINI_API_URL, {
           method: 'POST',
           headers: {

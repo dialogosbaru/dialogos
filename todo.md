@@ -47,3 +47,6 @@
 - [ ] Implementar preguntas de seguimiento inteligentes
 - [ ] Agregar memoria persistente mejorada
 - [ ] Pruebas de integración y optimización
+
+## Bugs Reportados - Fase Gemini
+- [x] Corregir error de autenticación en Gemini API (clave API no se pasa correctamente)
