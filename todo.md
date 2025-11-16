@@ -82,9 +82,9 @@
 - [x] Inicializar repositorio Git local
 - [x] Crear repositorio en GitHub
 - [x] Subir código a GitHub
-- [ ] Conectar repositorio a Vercel
-- [ ] Configurar variables de entorno en Vercel
-- [ ] Desplegar en Vercel
+- [x] Conectar repositorio a Vercel
+- [x] Configurar variables de entorno en Vercel
+- [ ] Corregir configuración de build en Vercel para Vite + Express
 
 ## Bugs Reportados - Fase Gemini
 - [x] Corregir error de autenticación en Gemini API (clave API no se pasa correctamente)
