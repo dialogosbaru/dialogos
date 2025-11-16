@@ -65,5 +65,11 @@
 - [x] Implementar seguimiento de preferencias del usuario
 - [ ] Agregar sincronizacion entre dispositivos
 
+## Sistema de Preguntas Iniciales (Fase 5)
+- [x] Crear 5 preguntas iniciales para perfilar usuarios nuevos
+- [x] Implementar flujo de preguntas iniciales
+- [x] Guardar respuestas en el perfil del usuario
+- [x] Usar respuestas para personalizar conversaciones futuras
+
 ## Bugs Reportados - Fase Gemini
 - [x] Corregir error de autenticación en Gemini API (clave API no se pasa correctamente)

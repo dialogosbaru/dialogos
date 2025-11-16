@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { publicProcedure, router } from '../_core/trpc';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { getUserProfile } from '../db';
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
@@ -10,9 +11,9 @@ interface GeminiMessage {
 }
 
 interface UserProfile {
-  name?: string;
-  favoriteTeam?: string;
-  favoriteSport?: string;
+  name?: string | null;
+  favoriteTeam?: string | null;
+  favoriteSport?: string | null;
   hobbies?: string[];
   motivations?: string[];
   interests?: string[];
@@ -58,46 +59,11 @@ const extractUserProfile = (conversationHistory: any[]): UserProfile => {
   return profile;
 };
 
-// Función para generar preguntas personalizadas basadas en el perfil
-const generatePersonalizedQuestions = (profile: UserProfile): string[] => {
-  const questions: string[] = [];
-  
-  if (!profile.name) {
-    questions.push('¿Cuál es tu nombre?');
-  }
-  
-  if (!profile.favoriteSport) {
-    questions.push('¿Cuál es tu deporte favorito?');
-  } else {
-    questions.push(`Me encanta que te guste ${profile.favoriteSport}. ¿A qué nivel lo practicas?`);
-  }
-  
-  if (!profile.favoriteTeam) {
-    questions.push('¿Tienes algún equipo favorito?');
-  } else {
-    questions.push(`¡${profile.favoriteTeam}! ¿Desde cuándo eres fan de este equipo?`);
-  }
-  
-  if (!profile.hobbies || profile.hobbies.length === 0) {
-    questions.push('¿Cuáles son tus hobbies o actividades favoritas en tu tiempo libre?');
-  }
-  
-  if (!profile.motivations || profile.motivations.length === 0) {
-    questions.push('¿Qué es lo que más te motiva en la vida?');
-  }
-  
-  if (!profile.interests || profile.interests.length === 0) {
-    questions.push('¿Hay algún tema o área que te interese especialmente?');
-  }
-  
-  return questions;
-};
-
 // Función para crear un prompt mejorado con información del usuario
-const createEnhancedSystemPrompt = (userProfile: UserProfile): string => {
+const createEnhancedSystemPrompt = (userProfile: UserProfile | null): string => {
   let profileContext = '';
   
-  if (Object.keys(userProfile).length > 1) {
+  if (userProfile && Object.keys(userProfile).length > 1) {
     profileContext = `\n\nInformación del usuario que has recopilado:`;
     if (userProfile.name) profileContext += `\n- Nombre: ${userProfile.name}`;
     if (userProfile.favoriteSport) profileContext += `\n- Deporte favorito: ${userProfile.favoriteSport}`;
@@ -153,6 +119,7 @@ export const chatRouter = router({
             emotion: z.string().optional(),
           })
         ),
+        userId: z.number().optional(),
       })
     )
     .mutation(async ({ input }) => {
@@ -164,9 +131,19 @@ export const chatRouter = router({
       try {
         const genAIClient = getGenAI();
         
+        // Obtener el perfil del usuario de la base de datos si userId está disponible
+        let dbUserProfile = null;
+        if (input.userId) {
+          dbUserProfile = await getUserProfile(input.userId);
+          console.log('User profile from database:', dbUserProfile);
+        }
+        
         // Extraer perfil del usuario del historial
-        const userProfile = extractUserProfile(input.conversationHistory);
-        console.log('Extracted user profile:', userProfile);
+        const conversationProfile = extractUserProfile(input.conversationHistory);
+        console.log('Extracted conversation profile:', conversationProfile);
+        
+        // Combinar perfiles (priorizar información de la base de datos)
+        const userProfile = dbUserProfile || conversationProfile;
         
         // Crear prompt mejorado con información del usuario
         const enhancedSystemPrompt = createEnhancedSystemPrompt(userProfile);
