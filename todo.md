@@ -79,9 +79,9 @@
 - [x] Adaptar respuestas de Leo segun el estado emocional
 
 ## Despliegue en GitHub y Vercel (Fase 7)
-- [ ] Inicializar repositorio Git local
-- [ ] Crear repositorio en GitHub
-- [ ] Subir código a GitHub
+- [x] Inicializar repositorio Git local
+- [x] Crear repositorio en GitHub
+- [x] Subir código a GitHub
 - [ ] Conectar repositorio a Vercel
 - [ ] Configurar variables de entorno en Vercel
 - [ ] Desplegar en Vercel
