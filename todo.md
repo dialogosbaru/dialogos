@@ -116,3 +116,8 @@
 - [x] Las CSS variables no se están aplicando (todo aparece en blanco) - solucionado con valores estáticos
 - [x] El título muestra %VITE_APP_TITLE% en lugar del nombre real - cambiado a "Diálogos"
 - [x] Configurar correctamente el build command en vercel.json - usando valores estáticos en const.ts e index.html
+
+## Bug Crítico - Paletas No Se Visualizan en Vercel
+- [x] Investigar por qué applyColorPalette no inyecta las CSS variables en el DOM
+- [x] Verificar que el useEffect en App.tsx se esté ejecutando correctamente
+- [x] Asegurar que las CSS variables OKLCH se apliquen al :root del documento (agregado prefijo oklch())

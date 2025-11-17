@@ -245,7 +245,8 @@ export function applyColorPalette(palette: ColorPalette) {
   Object.entries(palette.colors).forEach(([key, value]) => {
     // Convert key from camelCase to kebab-case
     const cssVarName = key.replace(/([A-Z])/g, '-$1').toLowerCase();
-    root.style.setProperty(`--${cssVarName}`, value);
+    // Wrap OKLCH values with oklch() function
+    root.style.setProperty(`--${cssVarName}`, `oklch(${value})`);
   });
   
   // Remove transition class after animation completes
