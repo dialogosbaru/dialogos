@@ -56,7 +56,7 @@ export default function OptionsPanel({ currentLanguage, onLanguageChange }: Opti
           <span className="sr-only">Opciones</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-background">
         <DialogHeader>
           <DialogTitle className="text-2xl">Opciones</DialogTitle>
           <DialogDescription>
@@ -106,30 +106,38 @@ export default function OptionsPanel({ currentLanguage, onLanguageChange }: Opti
                         {palette.description}
                       </p>
                       {/* Color preview */}
-                      <div className="flex gap-1 mt-2">
+                      <div className="flex gap-2 mt-2">
                         <div
-                          className="w-6 h-6 rounded border"
+                          className="w-8 h-8 rounded border-2 shadow-sm"
                           style={{
                             backgroundColor: `hsl(${palette.colors.primary})`,
+                            borderColor: `hsl(${palette.colors.border})`,
                           }}
+                          title="Primary"
                         />
                         <div
-                          className="w-6 h-6 rounded border"
+                          className="w-8 h-8 rounded border-2 shadow-sm"
                           style={{
                             backgroundColor: `hsl(${palette.colors.secondary})`,
+                            borderColor: `hsl(${palette.colors.border})`,
                           }}
+                          title="Secondary"
                         />
                         <div
-                          className="w-6 h-6 rounded border"
+                          className="w-8 h-8 rounded border-2 shadow-sm"
                           style={{
                             backgroundColor: `hsl(${palette.colors.accent})`,
+                            borderColor: `hsl(${palette.colors.border})`,
                           }}
+                          title="Accent"
                         />
                         <div
-                          className="w-6 h-6 rounded border"
+                          className="w-8 h-8 rounded border-2 shadow-sm"
                           style={{
                             backgroundColor: `hsl(${palette.colors.background})`,
+                            borderColor: `hsl(${palette.colors.border})`,
                           }}
+                          title="Background"
                         />
                       </div>
                     </div>

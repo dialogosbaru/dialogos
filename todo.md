@@ -96,3 +96,7 @@
 - [x] Crear sistema de persistencia de preferencias (localStorage)
 - [x] Integrar panel de Opciones en la interfaz principal
 - [x] Aplicar cambios de paleta dinámicamente con CSS variables
+
+## Bugs Reportados - Panel de Opciones
+- [x] Corregir overlay oscuro que hace que el diálogo se vea transparente
+- [x] Arreglar visualización de colores en las paletas (aparecen en blanco y negro)
