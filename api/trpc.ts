@@ -42,7 +42,7 @@ const chatRouter = router({
         }
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const model = genAI.getGenerativeModel({ model: "models/gemini-1.5-flash" });
 
         // System prompt for Leo
         const systemPrompt = `Eres Leo, un amigo conversacional empático y cálido. Tu propósito es ser un compañero de conversación que:
