@@ -15,7 +15,7 @@ const t = initTRPC.create({
 const publicProcedure = t.procedure;
 const router = t.router;
 
-// Chat router with Gemini integration using REST API
+// Chat router with OpenAI integration
 const chatRouter = router({
   message: publicProcedure
     .input((val: unknown) => {
@@ -32,11 +32,11 @@ const chatRouter = router({
 
       try {
         // Get API key from environment
-        const apiKey = process.env.GEMINI_API_KEY;
+        const apiKey = process.env.OPENAI_API_KEY;
         if (!apiKey) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: "Gemini API key not configured",
+            message: "OpenAI API key not configured",
           });
         }
 
@@ -58,49 +58,46 @@ Características de tus respuestas:
 
 Recuerda: Eres un amigo, no un terapeuta ni un asistente técnico. Tu objetivo es tener conversaciones genuinas y significativas.`;
 
-        const fullPrompt = `${systemPrompt}\n\nUsuario: ${message}\n\nLeo:`;
-
-        // Call Gemini API directly using REST
+        // Call OpenAI API
         const response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`,
+          "https://api.openai.com/v1/chat/completions",
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              "Authorization": `Bearer ${apiKey}`,
             },
             body: JSON.stringify({
-              contents: [
+              model: "gpt-3.5-turbo",
+              messages: [
                 {
-                  parts: [
-                    {
-                      text: fullPrompt,
-                    },
-                  ],
+                  role: "system",
+                  content: systemPrompt,
+                },
+                {
+                  role: "user",
+                  content: message,
                 },
               ],
-              generationConfig: {
-                temperature: 0.9,
-                topK: 40,
-                topP: 0.95,
-                maxOutputTokens: 1024,
-              },
+              temperature: 0.9,
+              max_tokens: 500,
             }),
           }
         );
 
         if (!response.ok) {
           const errorData = await response.text();
-          console.error("Gemini API error:", errorData);
+          console.error("OpenAI API error:", errorData);
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: `Gemini API error: ${response.status} ${response.statusText}`,
+            message: `OpenAI API error: ${response.status} ${response.statusText}`,
           });
         }
 
         const data = await response.json();
         
         // Extract text from response
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Lo siento, no pude generar una respuesta.";
+        const text = data.choices?.[0]?.message?.content || "Lo siento, no pude generar una respuesta.";
 
         return {
           text: text.trim(),
