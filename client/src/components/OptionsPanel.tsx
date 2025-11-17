@@ -110,7 +110,7 @@ export default function OptionsPanel({ currentLanguage, onLanguageChange }: Opti
                         <div
                           className="w-10 h-10 rounded-md border-2 shadow-md"
                           style={{
-                            backgroundColor: `hsl(${palette.colors.primary})`,
+                            backgroundColor: `oklch(${palette.colors.primary})`,
                             borderColor: "rgba(0, 0, 0, 0.2)",
                           }}
                           title="Primary"
@@ -118,7 +118,7 @@ export default function OptionsPanel({ currentLanguage, onLanguageChange }: Opti
                         <div
                           className="w-10 h-10 rounded-md border-2 shadow-md"
                           style={{
-                            backgroundColor: `hsl(${palette.colors.secondary})`,
+                            backgroundColor: `oklch(${palette.colors.secondary})`,
                             borderColor: "rgba(0, 0, 0, 0.2)",
                           }}
                           title="Secondary"
@@ -126,7 +126,7 @@ export default function OptionsPanel({ currentLanguage, onLanguageChange }: Opti
                         <div
                           className="w-10 h-10 rounded-md border-2 shadow-md"
                           style={{
-                            backgroundColor: `hsl(${palette.colors.accent})`,
+                            backgroundColor: `oklch(${palette.colors.accent})`,
                             borderColor: "rgba(0, 0, 0, 0.2)",
                           }}
                           title="Accent"
@@ -134,7 +134,7 @@ export default function OptionsPanel({ currentLanguage, onLanguageChange }: Opti
                         <div
                           className="w-10 h-10 rounded-md border-2 shadow-md"
                           style={{
-                            backgroundColor: `hsl(${palette.colors.background})`,
+                            backgroundColor: `oklch(${palette.colors.background})`,
                             borderColor: "rgba(0, 0, 0, 0.2)",
                           }}
                           title="Background"

@@ -101,3 +101,8 @@
 - [x] Eliminar completamente el overlay oscuro del diálogo (usamos backdrop-blur en lugar de bg oscuro)
 - [x] Mejorar contraste y visibilidad de colores en las paletas (bordes oscuros, tamaño 10x10)
 - [x] Agregar animaciones suaves al cambiar de paleta (transiciones CSS de 0.5s)
+
+## Bug Crítico - Paletas de Colores
+- [x] Convertir paletas de HSL a OKLCH (Tailwind CSS 4 usa OKLCH)
+- [x] Actualizar función applyColorPalette para OKLCH
+- [x] Verificar que la paleta predeterminada se cargue al inicio
