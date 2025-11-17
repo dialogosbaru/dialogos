@@ -110,3 +110,9 @@
 ## Bug - Paleta Predeterminada No Se Carga
 - [x] Agregar useEffect en App.tsx para aplicar paleta predeterminada al cargar la página
 - [x] Verificar que funcione en Vercel (no solo en desarrollo)
+
+## Bug Crítico - Variables de Entorno Vite en Vercel
+- [x] Investigar por qué las variables VITE_ no se reemplazan en el build de Vercel
+- [x] Las CSS variables no se están aplicando (todo aparece en blanco) - solucionado con valores estáticos
+- [x] El título muestra %VITE_APP_TITLE% en lugar del nombre real - cambiado a "Diálogos"
+- [x] Configurar correctamente el build command en vercel.json - usando valores estáticos en const.ts e index.html
