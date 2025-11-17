@@ -106,3 +106,7 @@
 - [x] Convertir paletas de HSL a OKLCH (Tailwind CSS 4 usa OKLCH)
 - [x] Actualizar función applyColorPalette para OKLCH
 - [x] Verificar que la paleta predeterminada se cargue al inicio
+
+## Bug - Paleta Predeterminada No Se Carga
+- [x] Agregar useEffect en App.tsx para aplicar paleta predeterminada al cargar la página
+- [x] Verificar que funcione en Vercel (no solo en desarrollo)

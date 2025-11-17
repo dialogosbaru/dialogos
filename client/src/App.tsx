@@ -6,6 +6,8 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import Home from "./pages/Home";
+import { useEffect } from "react";
+import { applyColorPalette, getPaletteById } from "./lib/colorPalettes";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -25,6 +27,16 @@ function Router() {
 // - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
 
 function App() {
+  // Apply default color palette on mount
+  useEffect(() => {
+    const savedPaletteId = localStorage.getItem('selectedPalette');
+    const paletteId = savedPaletteId || 'beige-cream';
+    const palette = getPaletteById(paletteId);
+    if (palette) {
+      applyColorPalette(palette);
+    }
+  }, []);
+
   return (
     <ErrorBoundary>
       <ThemeProvider
