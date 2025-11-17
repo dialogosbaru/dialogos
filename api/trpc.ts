@@ -15,7 +15,7 @@ const t = initTRPC.create({
 const publicProcedure = t.procedure;
 const router = t.router;
 
-// Chat router with OpenAI integration
+// Chat router with Groq integration (free LLaMA 3)
 const chatRouter = router({
   message: publicProcedure
     .input((val: unknown) => {
@@ -32,11 +32,11 @@ const chatRouter = router({
 
       try {
         // Get API key from environment
-        const apiKey = process.env.OPENAI_API_KEY;
+        const apiKey = process.env.GROQ_API_KEY;
         if (!apiKey) {
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: "OpenAI API key not configured",
+            message: "Groq API key not configured",
           });
         }
 
@@ -58,9 +58,9 @@ Características de tus respuestas:
 
 Recuerda: Eres un amigo, no un terapeuta ni un asistente técnico. Tu objetivo es tener conversaciones genuinas y significativas.`;
 
-        // Call OpenAI API
+        // Call Groq API (OpenAI-compatible)
         const response = await fetch(
-          "https://api.openai.com/v1/chat/completions",
+          "https://api.groq.com/openai/v1/chat/completions",
           {
             method: "POST",
             headers: {
@@ -68,7 +68,7 @@ Recuerda: Eres un amigo, no un terapeuta ni un asistente técnico. Tu objetivo e
               "Authorization": `Bearer ${apiKey}`,
             },
             body: JSON.stringify({
-              model: "gpt-3.5-turbo",
+              model: "llama-3.3-70b-versatile",
               messages: [
                 {
                   role: "system",
@@ -87,10 +87,10 @@ Recuerda: Eres un amigo, no un terapeuta ni un asistente técnico. Tu objetivo e
 
         if (!response.ok) {
           const errorData = await response.text();
-          console.error("OpenAI API error:", errorData);
+          console.error("Groq API error:", errorData);
           throw new TRPCError({
             code: "INTERNAL_SERVER_ERROR",
-            message: `OpenAI API error: ${response.status} ${response.statusText}`,
+            message: `Groq API error: ${response.status} ${response.statusText}`,
           });
         }
 
