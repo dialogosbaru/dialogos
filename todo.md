@@ -88,3 +88,11 @@
 
 ## Bugs Reportados - Fase Gemini
 - [x] Corregir error de autenticación en Gemini API (clave API no se pasa correctamente)
+
+## Panel de Opciones (Fase 8)
+- [x] Diseñar 8 paletas de colores amigables y profesionales
+- [x] Crear componente OptionsPanel con selector de idioma
+- [x] Implementar selector de paleta de colores con vista previa
+- [x] Crear sistema de persistencia de preferencias (localStorage)
+- [x] Integrar panel de Opciones en la interfaz principal
+- [x] Aplicar cambios de paleta dinámicamente con CSS variables

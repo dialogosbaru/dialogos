@@ -1,13 +1,8 @@
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Globe, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { APP_TITLE } from '@/const';
+import OptionsPanel from '@/components/OptionsPanel';
 
 interface ChatHeaderProps {
   onClearHistory?: () => void;
@@ -25,35 +20,10 @@ export function ChatHeader({ onClearHistory }: ChatHeaderProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="gap-2"
-                title={t('chat.language')}
-              >
-                <Globe className="h-4 w-4" />
-                <span className="hidden sm:inline">
-                  {language === 'es' ? 'ES' : 'EN'}
-                </span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={() => setLanguage('es')}
-                className={language === 'es' ? 'bg-accent' : ''}
-              >
-                {t('chat.spanish')}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => setLanguage('en')}
-                className={language === 'en' ? 'bg-accent' : ''}
-              >
-                {t('chat.english')}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <OptionsPanel
+            currentLanguage={language}
+            onLanguageChange={setLanguage}
+          />
 
           {onClearHistory && (
             <Button
