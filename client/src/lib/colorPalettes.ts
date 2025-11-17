@@ -238,9 +238,18 @@ export const colorPalettes: ColorPalette[] = [
 
 export function applyColorPalette(palette: ColorPalette) {
   const root = document.documentElement;
+  
+  // Add transition class for smooth color changes
+  root.classList.add('palette-transitioning');
+  
   Object.entries(palette.colors).forEach(([key, value]) => {
     root.style.setProperty(`--${key}`, value);
   });
+  
+  // Remove transition class after animation completes
+  setTimeout(() => {
+    root.classList.remove('palette-transitioning');
+  }, 500);
 }
 
 export function getPaletteById(id: string): ColorPalette | undefined {

@@ -98,5 +98,6 @@
 - [x] Aplicar cambios de paleta dinámicamente con CSS variables
 
 ## Bugs Reportados - Panel de Opciones
-- [x] Corregir overlay oscuro que hace que el diálogo se vea transparente
-- [x] Arreglar visualización de colores en las paletas (aparecen en blanco y negro)
+- [x] Eliminar completamente el overlay oscuro del diálogo (usamos backdrop-blur en lugar de bg oscuro)
+- [x] Mejorar contraste y visibilidad de colores en las paletas (bordes oscuros, tamaño 10x10)
+- [x] Agregar animaciones suaves al cambiar de paleta (transiciones CSS de 0.5s)

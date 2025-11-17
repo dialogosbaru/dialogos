@@ -56,7 +56,7 @@ export default function OptionsPanel({ currentLanguage, onLanguageChange }: Opti
           <span className="sr-only">Opciones</span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-background">
+      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-background border-2 shadow-2xl">
         <DialogHeader>
           <DialogTitle className="text-2xl">Opciones</DialogTitle>
           <DialogDescription>
@@ -108,34 +108,34 @@ export default function OptionsPanel({ currentLanguage, onLanguageChange }: Opti
                       {/* Color preview */}
                       <div className="flex gap-2 mt-2">
                         <div
-                          className="w-8 h-8 rounded border-2 shadow-sm"
+                          className="w-10 h-10 rounded-md border-2 shadow-md"
                           style={{
                             backgroundColor: `hsl(${palette.colors.primary})`,
-                            borderColor: `hsl(${palette.colors.border})`,
+                            borderColor: "rgba(0, 0, 0, 0.2)",
                           }}
                           title="Primary"
                         />
                         <div
-                          className="w-8 h-8 rounded border-2 shadow-sm"
+                          className="w-10 h-10 rounded-md border-2 shadow-md"
                           style={{
                             backgroundColor: `hsl(${palette.colors.secondary})`,
-                            borderColor: `hsl(${palette.colors.border})`,
+                            borderColor: "rgba(0, 0, 0, 0.2)",
                           }}
                           title="Secondary"
                         />
                         <div
-                          className="w-8 h-8 rounded border-2 shadow-sm"
+                          className="w-10 h-10 rounded-md border-2 shadow-md"
                           style={{
                             backgroundColor: `hsl(${palette.colors.accent})`,
-                            borderColor: `hsl(${palette.colors.border})`,
+                            borderColor: "rgba(0, 0, 0, 0.2)",
                           }}
                           title="Accent"
                         />
                         <div
-                          className="w-8 h-8 rounded border-2 shadow-sm"
+                          className="w-10 h-10 rounded-md border-2 shadow-md"
                           style={{
                             backgroundColor: `hsl(${palette.colors.background})`,
-                            borderColor: `hsl(${palette.colors.border})`,
+                            borderColor: "rgba(0, 0, 0, 0.2)",
                           }}
                           title="Background"
                         />
