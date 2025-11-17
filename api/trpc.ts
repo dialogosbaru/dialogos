@@ -2,7 +2,6 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import superjson from "superjson";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Constants
 const COOKIE_NAME = "session";
@@ -16,7 +15,7 @@ const t = initTRPC.create({
 const publicProcedure = t.procedure;
 const router = t.router;
 
-// Chat router with Gemini integration
+// Chat router with Gemini integration using REST API
 const chatRouter = router({
   message: publicProcedure
     .input((val: unknown) => {
@@ -32,7 +31,7 @@ const chatRouter = router({
       const { message } = input;
 
       try {
-        // Initialize Gemini API
+        // Get API key from environment
         const apiKey = process.env.GEMINI_API_KEY;
         if (!apiKey) {
           throw new TRPCError({
@@ -40,9 +39,6 @@ const chatRouter = router({
             message: "Gemini API key not configured",
           });
         }
-
-        const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: "models/gemini-1.5-flash" });
 
         // System prompt for Leo
         const systemPrompt = `Eres Leo, un amigo conversacional empático y cálido. Tu propósito es ser un compañero de conversación que:
@@ -64,9 +60,47 @@ Recuerda: Eres un amigo, no un terapeuta ni un asistente técnico. Tu objetivo e
 
         const fullPrompt = `${systemPrompt}\n\nUsuario: ${message}\n\nLeo:`;
 
-        const result = await model.generateContent(fullPrompt);
-        const response = result.response;
-        const text = response.text();
+        // Call Gemini API directly using REST
+        const response = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              contents: [
+                {
+                  parts: [
+                    {
+                      text: fullPrompt,
+                    },
+                  ],
+                },
+              ],
+              generationConfig: {
+                temperature: 0.9,
+                topK: 40,
+                topP: 0.95,
+                maxOutputTokens: 1024,
+              },
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.text();
+          console.error("Gemini API error:", errorData);
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `Gemini API error: ${response.status} ${response.statusText}`,
+          });
+        }
+
+        const data = await response.json();
+        
+        // Extract text from response
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Lo siento, no pude generar una respuesta.";
 
         return {
           text: text.trim(),
@@ -74,6 +108,11 @@ Recuerda: Eres un amigo, no un terapeuta ni un asistente técnico. Tu objetivo e
         };
       } catch (error: any) {
         console.error("Error generating response:", error);
+        
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: error.message || "Failed to generate response",
