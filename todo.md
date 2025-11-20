@@ -121,3 +121,14 @@
 - [x] Investigar por qué applyColorPalette no inyecta las CSS variables en el DOM
 - [x] Verificar que el useEffect en App.tsx se esté ejecutando correctamente
 - [x] Asegurar que las CSS variables OKLCH se apliquen al :root del documento (agregado prefijo oklch())
+
+## Mejoras de Voz Natural y Lenguaje Urbano (Fase 9)
+- [x] Actualizar prompt de Leo para usar lenguaje urbano y coloquial
+- [x] Incorporar expresiones modernas y jerga natural
+- [x] Mejorar detección de emociones en contexto de conversación
+- [x] Ajustar parámetros de voz dinámicamente según estado de ánimo
+- [x] Implementar pausas naturales en la síntesis de voz
+- [x] Agregar énfasis en palabras clave con procesamiento de texto
+- [x] Seleccionar voces más expresivas del navegador
+- [x] Probar diferentes escenarios de conversación (feliz, triste)
+- [x] Ajustar tonos para conversaciones alegres, tristes, motivacionales

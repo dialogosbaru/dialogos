@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef, useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 interface SpeechRecognitionEvent extends Event {
@@ -17,13 +17,91 @@ declare global {
   }
 }
 
+/**
+ * Procesa el texto para agregar pausas naturales y énfasis
+ * Convierte el texto en algo más expresivo y humano
+ */
+function processTextForNaturalSpeech(text: string): string {
+  let processedText = text;
+
+  // Agregar pausas después de signos de puntuación (simulando respiración natural)
+  processedText = processedText.replace(/\./g, '. ');
+  processedText = processedText.replace(/,/g, ', ');
+  processedText = processedText.replace(/!/g, '! ');
+  processedText = processedText.replace(/\?/g, '? ');
+  
+  // Agregar pausas más largas después de oraciones completas
+  processedText = processedText.replace(/\. /g, '.  ');
+  processedText = processedText.replace(/! /g, '!  ');
+  processedText = processedText.replace(/\? /g, '?  ');
+
+  // Limpiar espacios múltiples
+  processedText = processedText.replace(/\s+/g, ' ').trim();
+
+  return processedText;
+}
+
+/**
+ * Selecciona la mejor voz disponible según el idioma y características deseadas
+ * Prioriza voces más naturales y expresivas
+ */
+function selectBestVoice(language: string, voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null {
+  if (!voices || voices.length === 0) return null;
+
+  const targetLang = language === 'es' ? 'es' : 'en';
+  
+  // Filtrar voces por idioma
+  const languageVoices = voices.filter(voice => voice.lang.startsWith(targetLang));
+  
+  if (languageVoices.length === 0) {
+    // Si no hay voces del idioma, usar cualquier voz disponible
+    return voices[0];
+  }
+
+  // Priorizar voces con características más naturales
+  // 1. Voces premium/mejoradas (Google, Microsoft Neural, etc.)
+  const premiumVoice = languageVoices.find(voice => 
+    voice.name.includes('Google') || 
+    voice.name.includes('Neural') ||
+    voice.name.includes('Premium') ||
+    voice.name.includes('Enhanced')
+  );
+  if (premiumVoice) return premiumVoice;
+
+  // 2. Voces locales (generalmente mejor calidad)
+  const localVoice = languageVoices.find(voice => voice.localService);
+  if (localVoice) return localVoice;
+
+  // 3. Cualquier voz del idioma correcto
+  return languageVoices[0];
+}
+
 export function useSpeech() {
   const { language, t } = useLanguage();
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [transcript, setTranscript] = useState('');
+  const [availableVoices, setAvailableVoices] = useState<SpeechSynthesisVoice[]>([]);
   const recognitionRef = useRef<any>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+
+  // Cargar voces disponibles
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      const loadVoices = () => {
+        const voices = window.speechSynthesis.getVoices();
+        setAvailableVoices(voices);
+      };
+
+      // Cargar voces inmediatamente
+      loadVoices();
+
+      // Escuchar cambios en las voces (algunos navegadores cargan voces de forma asíncrona)
+      if (window.speechSynthesis.onvoiceschanged !== undefined) {
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+      }
+    }
+  }, []);
 
   // Inicializar el reconocimiento de voz
   const initRecognition = useCallback(() => {
@@ -96,7 +174,7 @@ export function useSpeech() {
     }
   }, []);
 
-  // Hablar (TTS) con parámetros de voz ajustables
+  // Hablar (TTS) con parámetros de voz ajustables y procesamiento natural
   const speak = useCallback(
     (text: string, voiceProfile?: { rate: number; pitch: number; volume: number }) => {
       try {
@@ -109,8 +187,19 @@ export function useSpeech() {
         // Cancelar cualquier síntesis anterior
         window.speechSynthesis.cancel();
 
-        const utterance = new SpeechSynthesisUtterance(text);
+        // Procesar el texto para hacerlo más natural
+        const processedText = processTextForNaturalSpeech(text);
+
+        const utterance = new SpeechSynthesisUtterance(processedText);
         utterance.lang = language === 'es' ? 'es-ES' : 'en-US';
+        
+        // Seleccionar la mejor voz disponible
+        const bestVoice = selectBestVoice(language, availableVoices);
+        if (bestVoice) {
+          utterance.voice = bestVoice;
+          console.log('Using voice:', bestVoice.name);
+        }
+
         // Usar parámetros de voz personalizados si se proporcionan
         utterance.rate = voiceProfile?.rate || 1;
         utterance.pitch = voiceProfile?.pitch || 1;
@@ -136,7 +225,7 @@ export function useSpeech() {
         setIsSpeaking(false);
       }
     },
-    [language]
+    [language, availableVoices]
   );
 
   // Detener síntesis de voz
