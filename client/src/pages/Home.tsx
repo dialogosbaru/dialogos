@@ -62,10 +62,15 @@ export default function Home() {
         inputRef.current.value = '';
       }
 
+      // Obtener nivel urbano de localStorage (predeterminado 50%)
+      const urbanLevel = parseInt(localStorage.getItem('urbanLevel') || '50', 10);
+      console.log('Sending message with urbanLevel:', urbanLevel);
+
       // Enviar a Gemini API a través de tRPC
       sendMessageToGemini({
         message: messageText,
         conversationHistory: messages,
+        urbanLevel: urbanLevel,
       });
     } catch (error) {
       console.error('Error sending message:', error);

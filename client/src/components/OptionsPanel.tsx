@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Slider } from "@/components/ui/slider";
 import { Settings } from "lucide-react";
 import { colorPalettes, applyColorPalette, getPaletteById } from "@/lib/colorPalettes";
 import type { Language } from "@/contexts/LanguageContext";
@@ -21,9 +22,10 @@ interface OptionsPanelProps {
 
 export default function OptionsPanel({ currentLanguage, onLanguageChange }: OptionsPanelProps) {
   const [selectedPalette, setSelectedPalette] = useState<string>("beige-cream");
+  const [urbanLevel, setUrbanLevel] = useState<number>(50);
   const [open, setOpen] = useState(false);
 
-  // Load saved palette from localStorage on mount
+  // Load saved palette and urban level from localStorage on mount
   useEffect(() => {
     const savedPalette = localStorage.getItem("colorPalette");
     if (savedPalette) {
@@ -32,6 +34,11 @@ export default function OptionsPanel({ currentLanguage, onLanguageChange }: Opti
       if (palette) {
         applyColorPalette(palette);
       }
+    }
+    
+    const savedUrbanLevel = localStorage.getItem("urbanLevel");
+    if (savedUrbanLevel) {
+      setUrbanLevel(parseInt(savedUrbanLevel, 10));
     }
   }, []);
 
@@ -46,6 +53,20 @@ export default function OptionsPanel({ currentLanguage, onLanguageChange }: Opti
 
   const handleLanguageChange = (language: string) => {
     onLanguageChange(language as Language);
+  };
+
+  const handleUrbanLevelChange = (value: number[]) => {
+    const newLevel = value[0];
+    setUrbanLevel(newLevel);
+    localStorage.setItem("urbanLevel", newLevel.toString());
+  };
+
+  const getUrbanLevelLabel = (level: number): string => {
+    if (level === 0) return "Formal";
+    if (level <= 25) return "Poco urbano";
+    if (level <= 50) return "Moderado";
+    if (level <= 75) return "Urbano";
+    return "Muy urbano";
   };
 
   return (
@@ -82,6 +103,29 @@ export default function OptionsPanel({ currentLanguage, onLanguageChange }: Opti
                 </Label>
               </div>
             </RadioGroup>
+          </div>
+
+          {/* Urban Language Level */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label className="text-base font-semibold">Nivel de Lenguaje Urbano</Label>
+              <span className="text-sm font-medium text-muted-foreground">
+                {urbanLevel}% - {getUrbanLevelLabel(urbanLevel)}
+              </span>
+            </div>
+            <div className="space-y-2">
+              <Slider
+                value={[urbanLevel]}
+                onValueChange={handleUrbanLevelChange}
+                min={0}
+                max={100}
+                step={5}
+                className="w-full"
+              />
+              <p className="text-sm text-muted-foreground">
+                Ajusta qué tan urbano y coloquial quieres que Leo te hable
+              </p>
+            </div>
           </div>
 
           {/* Color Palette Selection */}

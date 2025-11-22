@@ -132,3 +132,12 @@
 - [x] Seleccionar voces más expresivas del navegador
 - [x] Probar diferentes escenarios de conversación (feliz, triste)
 - [x] Ajustar tonos para conversaciones alegres, tristes, motivacionales
+
+## Control de Intensidad de Lenguaje Urbano (Fase 10)
+- [x] Agregar slider en OptionsPanel para controlar intensidad urbana (0-100%)
+- [x] Crear sistema de niveles de lenguaje en el prompt (formal, moderado, urbano, muy urbano)
+- [x] Implementar persistencia del nivel en localStorage
+- [x] Pasar el nivel de intensidad al backend en cada mensaje
+- [x] Ajustar el prompt de Leo dinámicamente según el nivel seleccionado
+- [x] Probar diferentes niveles (0% formal, 50% moderado)
+- [x] Establecer 50% como valor predeterminado
