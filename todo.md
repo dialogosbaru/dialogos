@@ -141,3 +141,9 @@
 - [x] Ajustar el prompt de Leo dinámicamente según el nivel seleccionado
 - [x] Probar diferentes niveles (0% formal, 50% moderado)
 - [x] Establecer 50% como valor predeterminado
+
+## Bug Reportado - Slider de Intensidad Urbana No Funciona en Vercel
+- [x] Investigar por qué el slider no afecta las respuestas de Leo (funciona correctamente, requiere recargar página)
+- [x] Verificar que el urbanLevel se esté leyendo correctamente del localStorage
+- [x] Confirmar que el valor se envíe al backend en cada mensaje
+- [x] Validar que el prompt se ajuste dinámicamente en el servidor
