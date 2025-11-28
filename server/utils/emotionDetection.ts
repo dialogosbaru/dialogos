@@ -78,6 +78,10 @@ const EMOTION_KEYWORDS: Record<Emotion, string[]> = {
     'me late', 'está bueno', 'qué bueno', 'qué bien', 'súper', 'bacán',
     'está de puta madre', 'está chingón', 'está padrísimo', 'qué chulo',
     'me encanta', 'me fascina', 'me flipa', 'me mola', 'está guay',
+    // Colombiano
+    'chimba', 'qué chimba', 'bacano', 'berraco', 'qué berraco', 'parce',
+    'parcero', 'llave', 'hermano', 'qué nota', 'qué bien parce', 'qué bacano',
+    'está chimba', 'está bacano', 'está berraco', 'muy berraco', 'muy bacano',
     // English
     'happy', 'joyful', 'content', 'good', 'excellent', 'wonderful', 'great',
     'love', 'adore', 'love it', 'perfect', 'awesome', 'amazing', 'fantastic',
@@ -92,6 +96,10 @@ const EMOTION_KEYWORDS: Record<Emotion, string[]> = {
     'me siento mal', 'me siento de la chingada', 'estoy hecho mierda',
     'estoy para el arrastre', 'estoy que me lleva', 'no aguanto más',
     'qué gacho', 'qué feo', 'qué mal rollo', 'qué pena',
+    // Colombiano
+    'gonorrea', 'qué gonorrea', 'qué mal parce', 'está muy duro', 'está muy gonorrea',
+    'qué maluco', 'qué feo parce', 'qué tristeza', 'me siento mal parce',
+    'estoy mal hermano', 'qué vaina', 'qué vaina tan fea', 'está muy duro esto',
     // English
     'sad', 'depressed', 'unhappy', 'bad', 'awful', 'horrible', 'miserable',
     'cry', 'tears', 'pain', 'suffer', 'anguish', 'desperate', 'down',
@@ -147,6 +155,10 @@ const EMOTION_KEYWORDS: Record<Emotion, string[]> = {
     'qué emoción', 'qué locura', 'no lo puedo creer', 'estoy que no quepo',
     'estoy que reviento', 'estoy súper emocionado', 'qué genial',
     'qué chido', 'qué bacán', 'qué crack', 'está de poca madre',
+    // Colombiano
+    'qué chimba parce', 'está muy berraco', 'qué nota', 'qué bacano parce',
+    'estoy muy emocionado parce', 'qué locura hermano', 'no joda qué chimba',
+    'está muy chimba', 'qué berraquera', 'qué vaina tan berraca',
     // English
     'excited', 'enthusiastic', 'euphoric', 'amazing', 'incredible',
     'fascinating', 'emotion', 'adrenaline', 'pumped', 'stoked', 'hyped',

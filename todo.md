@@ -147,3 +147,11 @@
 - [x] Verificar que el urbanLevel se esté leyendo correctamente del localStorage
 - [x] Confirmar que el valor se envíe al backend en cada mensaje
 - [x] Validar que el prompt se ajuste dinámicamente en el servidor
+
+## Lenguaje Urbano Colombiano (Fase 11)
+- [x] Actualizar prompt de Leo con expresiones colombianas auténticas
+- [x] Incorporar palabras como "parce", "chimba", "bacano", "berraco", "gonorrea", "parcero", "llave", "camello"
+- [x] Actualizar detección de emociones con palabras colombianas
+- [x] Ajustar todos los niveles de intensidad (0-100%) con jerga colombiana
+- [x] Probar diferentes escenarios con nivel 45-50% (moderado colombiano)
+- [x] Verificar que el tono sea natural y auténtico
