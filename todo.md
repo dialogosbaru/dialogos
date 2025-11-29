@@ -156,8 +156,8 @@
 - [x] Probar diferentes escenarios con nivel 45-50% (moderado colombiano)
 - [x] Verificar que el tono sea natural y auténtico
 
-## Bug Cr\u00edtico - Vercel No Aplica Lenguaje Colombiano
-- [ ] Diagnosticar por qu\u00e9 Vercel no usa el c\u00f3digo actualizado de GitHub
-- [ ] Verificar si hay problemas de cach\u00e9 en el build de Vercel
-- [ ] Forzar rebuild completo limpiando cach\u00e9
-- [ ] Confirmar que el backend procesa correctamente urbanLevel en producci\u00f3n
+## Bug Cr\u00edtico - ## Bug Crítico - Vercel No Aplica Lenguaje Colombiano
+- [x] Diagnosticar por qué Vercel no usa el código actualizado de GitHub (código está en build)
+- [x] Verificar si hay problemas de caché en el build de Vercel (sí, caché agresivo)
+- [ ] Forzar rebuild completo limpiando caché (agregado .vercelignore)
+- [ ] Confirmar que el backend procesa correctamente urbanLevel en produccióni\u00f3n
