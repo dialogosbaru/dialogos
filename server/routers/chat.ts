@@ -232,10 +232,16 @@ export const chatRouter = router({
         
         // Obtener nivel urbano (predeterminado 50%)
         const urbanLevel = input.urbanLevel ?? 50;
-        console.log('Urban level:', urbanLevel);
+        console.log('=== URBAN LEVEL DEBUG ===');
+        console.log('Input urbanLevel:', input.urbanLevel);
+        console.log('Final urbanLevel:', urbanLevel);
+        console.log('========================');
         
         // Crear prompt mejorado con información del usuario y nivel urbano
         const enhancedSystemPrompt = createEnhancedSystemPrompt(userProfile, urbanLevel);
+        console.log('=== SYSTEM PROMPT PREVIEW ===');
+        console.log(enhancedSystemPrompt.substring(0, 300));
+        console.log('============================');
         
         // Usar el modelo gemini-2.5-flash disponible en la API
         const model = genAIClient.getGenerativeModel({ 
