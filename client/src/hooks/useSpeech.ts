@@ -17,9 +17,104 @@ declare global {
   }
 }
 
+interface EmotionalSegment {
+  text: string;
+  emotion: 'neutral' | 'happy' | 'sad' | 'excited' | 'empathetic' | 'motivational' | 'questioning';
+  rate: number;
+  pitch: number;
+  pauseBefore: number; // milisegundos
+}
+
 /**
- * Procesa el texto para agregar pausas naturales y énfasis
- * Convierte el texto en algo más expresivo y humano
+ * Analiza el contenido emocional del texto y divide en segmentos con diferentes características vocales
+ */
+function analyzeEmotionalContent(text: string): EmotionalSegment[] {
+  const segments: EmotionalSegment[] = [];
+  
+  // Dividir el texto en oraciones
+  const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+  
+  sentences.forEach((sentence, index) => {
+    const lowerSentence = sentence.toLowerCase();
+    let emotion: EmotionalSegment['emotion'] = 'neutral';
+    let rate = 1.0;
+    let pitch = 1.0;
+    let pauseBefore = index > 0 ? 400 : 0; // Pausa entre oraciones
+    
+    // Detectar emociones basadas en palabras clave y puntuación
+    
+    // Felicidad/Emoción
+    if (
+      lowerSentence.includes('¡') ||
+      lowerSentence.includes('chimba') ||
+      lowerSentence.includes('bacano') ||
+      lowerSentence.includes('genial') ||
+      lowerSentence.includes('excelente') ||
+      lowerSentence.includes('felicidades') ||
+      lowerSentence.includes('increíble') ||
+      lowerSentence.includes('brutal')
+    ) {
+      emotion = 'excited';
+      rate = 1.15; // Más rápido cuando está emocionado
+      pitch = 1.15; // Tono más agudo
+      pauseBefore = index > 0 ? 300 : 0; // Pausas más cortas
+    }
+    
+    // Tristeza/Empatía
+    else if (
+      lowerSentence.includes('lamento') ||
+      lowerSentence.includes('triste') ||
+      lowerSentence.includes('difícil') ||
+      lowerSentence.includes('entiendo') ||
+      lowerSentence.includes('comprendo') ||
+      lowerSentence.includes('uff') ||
+      lowerSentence.includes('gonorrea') ||
+      lowerSentence.includes('mal rollo')
+    ) {
+      emotion = 'empathetic';
+      rate = 0.85; // Más lento y pausado
+      pitch = 0.9; // Tono más grave
+      pauseBefore = index > 0 ? 500 : 0; // Pausas más largas
+    }
+    
+    // Motivación/Ánimo
+    else if (
+      lowerSentence.includes('dale') ||
+      lowerSentence.includes('vas a') ||
+      lowerSentence.includes('puedes') ||
+      lowerSentence.includes('adelante') ||
+      lowerSentence.includes('ánimo') ||
+      lowerSentence.includes('berraco') ||
+      lowerSentence.includes('romperla')
+    ) {
+      emotion = 'motivational';
+      rate = 1.1; // Ritmo energético
+      pitch = 1.1; // Tono elevado
+      pauseBefore = index > 0 ? 350 : 0;
+    }
+    
+    // Preguntas
+    else if (sentence.includes('?')) {
+      emotion = 'questioning';
+      rate = 0.95; // Ligeramente más lento
+      pitch = 1.05; // Tono sube al final
+      pauseBefore = index > 0 ? 450 : 0; // Pausa antes de preguntar
+    }
+    
+    segments.push({
+      text: sentence.trim(),
+      emotion,
+      rate,
+      pitch,
+      pauseBefore
+    });
+  });
+  
+  return segments;
+}
+
+/**
+ * Procesa el texto para agregar pausas naturales, respiraciones y énfasis
  */
 function processTextForNaturalSpeech(text: string): string {
   let processedText = text;
@@ -34,6 +129,13 @@ function processTextForNaturalSpeech(text: string): string {
   processedText = processedText.replace(/\. /g, '.  ');
   processedText = processedText.replace(/! /g, '!  ');
   processedText = processedText.replace(/\? /g, '?  ');
+  
+  // Agregar pausas antes de palabras clave emocionales (énfasis)
+  const emphasisWords = ['chimba', 'bacano', 'berraco', 'gonorrea', 'brutal', 'increíble', 'genial'];
+  emphasisWords.forEach(word => {
+    const regex = new RegExp(`\\b${word}\\b`, 'gi');
+    processedText = processedText.replace(regex, ` ${word}`);
+  });
 
   // Limpiar espacios múltiples
   processedText = processedText.replace(/\s+/g, ' ').trim();
@@ -43,7 +145,6 @@ function processTextForNaturalSpeech(text: string): string {
 
 /**
  * Selecciona la mejor voz disponible según el idioma y características deseadas
- * Prioriza voces más naturales y expresivas
  */
 function selectBestVoice(language: string, voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null {
   if (!voices || voices.length === 0) return null;
@@ -54,12 +155,10 @@ function selectBestVoice(language: string, voices: SpeechSynthesisVoice[]): Spee
   const languageVoices = voices.filter(voice => voice.lang.startsWith(targetLang));
   
   if (languageVoices.length === 0) {
-    // Si no hay voces del idioma, usar cualquier voz disponible
     return voices[0];
   }
 
   // Priorizar voces con características más naturales
-  // 1. Voces premium/mejoradas (Google, Microsoft Neural, etc.)
   const premiumVoice = languageVoices.find(voice => 
     voice.name.includes('Google') || 
     voice.name.includes('Neural') ||
@@ -68,11 +167,9 @@ function selectBestVoice(language: string, voices: SpeechSynthesisVoice[]): Spee
   );
   if (premiumVoice) return premiumVoice;
 
-  // 2. Voces locales (generalmente mejor calidad)
   const localVoice = languageVoices.find(voice => voice.localService);
   if (localVoice) return localVoice;
 
-  // 3. Cualquier voz del idioma correcto
   return languageVoices[0];
 }
 
@@ -93,10 +190,8 @@ export function useSpeech() {
         setAvailableVoices(voices);
       };
 
-      // Cargar voces inmediatamente
       loadVoices();
 
-      // Escuchar cambios en las voces (algunos navegadores cargan voces de forma asíncrona)
       if (window.speechSynthesis.onvoiceschanged !== undefined) {
         window.speechSynthesis.onvoiceschanged = loadVoices;
       }
@@ -174,11 +269,49 @@ export function useSpeech() {
     }
   }, []);
 
-  // Hablar (TTS) con parámetros de voz ajustables y procesamiento natural
+  /**
+   * Habla un segmento emocional con características vocales específicas
+   */
+  const speakSegment = useCallback(
+    (segment: EmotionalSegment, voice: SpeechSynthesisVoice | null): Promise<void> => {
+      return new Promise((resolve) => {
+        // Esperar la pausa antes del segmento (simulando respiración)
+        setTimeout(() => {
+          const processedText = processTextForNaturalSpeech(segment.text);
+          const utterance = new SpeechSynthesisUtterance(processedText);
+          utterance.lang = language === 'es' ? 'es-ES' : 'en-US';
+          
+          if (voice) {
+            utterance.voice = voice;
+          }
+
+          utterance.rate = segment.rate;
+          utterance.pitch = segment.pitch;
+          utterance.volume = 1;
+
+          utterance.onend = () => {
+            resolve();
+          };
+
+          utterance.onerror = (event: any) => {
+            console.error('TTS segment error:', event.error || 'Unknown error');
+            resolve();
+          };
+
+          window.speechSynthesis.speak(utterance);
+        }, segment.pauseBefore);
+      });
+    },
+    [language]
+  );
+
+  /**
+   * Hablar con expresividad emocional avanzada
+   * Analiza el contenido emocional y ajusta los parámetros de voz dinámicamente
+   */
   const speak = useCallback(
-    (text: string, voiceProfile?: { rate: number; pitch: number; volume: number }) => {
+    async (text: string, voiceProfile?: { rate: number; pitch: number; volume: number }) => {
       try {
-        // Verificar que el navegador soporta síntesis de voz
         if (!window.speechSynthesis) {
           console.warn('Speech Synthesis not supported in this browser');
           return;
@@ -186,28 +319,78 @@ export function useSpeech() {
 
         // Cancelar cualquier síntesis anterior
         window.speechSynthesis.cancel();
+        setIsSpeaking(true);
 
-        // Procesar el texto para hacerlo más natural
-        const processedText = processTextForNaturalSpeech(text);
-
-        const utterance = new SpeechSynthesisUtterance(processedText);
-        utterance.lang = language === 'es' ? 'es-ES' : 'en-US';
-        
-        // Seleccionar la mejor voz disponible
+        // Seleccionar la mejor voz
         const bestVoice = selectBestVoice(language, availableVoices);
         if (bestVoice) {
-          utterance.voice = bestVoice;
           console.log('Using voice:', bestVoice.name);
         }
 
-        // Usar parámetros de voz personalizados si se proporcionan
-        utterance.rate = voiceProfile?.rate || 1;
-        utterance.pitch = voiceProfile?.pitch || 1;
-        utterance.volume = voiceProfile?.volume || 1;
+        // Si se proporciona un perfil de voz personalizado, usar síntesis simple
+        if (voiceProfile) {
+          const processedText = processTextForNaturalSpeech(text);
+          const utterance = new SpeechSynthesisUtterance(processedText);
+          utterance.lang = language === 'es' ? 'es-ES' : 'en-US';
+          
+          if (bestVoice) {
+            utterance.voice = bestVoice;
+          }
 
-        utterance.onstart = () => {
-          setIsSpeaking(true);
-        };
+          utterance.rate = voiceProfile.rate;
+          utterance.pitch = voiceProfile.pitch;
+          utterance.volume = voiceProfile.volume;
+
+          utterance.onend = () => {
+            setIsSpeaking(false);
+          };
+
+          utterance.onerror = (event: any) => {
+            setIsSpeaking(false);
+            console.error('TTS error:', event.error || 'Unknown error');
+          };
+
+          window.speechSynthesis.speak(utterance);
+          return;
+        }
+
+        // Análisis emocional avanzado para calcular parámetros promedio
+        const segments = analyzeEmotionalContent(text);
+        console.log('Emotional segments:', segments.map(s => ({ emotion: s.emotion, rate: s.rate, pitch: s.pitch })));
+
+        // Calcular parámetros promedio ponderados según la longitud de cada segmento
+        let totalRate = 0;
+        let totalPitch = 0;
+        let totalLength = 0;
+
+        segments.forEach(segment => {
+          const segmentLength = segment.text.length;
+          totalRate += segment.rate * segmentLength;
+          totalPitch += segment.pitch * segmentLength;
+          totalLength += segmentLength;
+        });
+
+        const avgRate = totalLength > 0 ? totalRate / totalLength : 1.0;
+        const avgPitch = totalLength > 0 ? totalPitch / totalLength : 1.0;
+
+        // Validar y limitar parámetros para evitar errores de síntesis
+        const safeRate = Math.max(0.5, Math.min(2.0, avgRate)); // Limitar entre 0.5 y 2.0
+        const safePitch = Math.max(0.5, Math.min(2.0, avgPitch)); // Limitar entre 0.5 y 2.0
+
+        console.log('Average voice parameters:', { rate: safeRate, pitch: safePitch });
+
+        // Procesar el texto con pausas naturales
+        const processedText = processTextForNaturalSpeech(text);
+        const utterance = new SpeechSynthesisUtterance(processedText);
+        utterance.lang = language === 'es' ? 'es-ES' : 'en-US';
+        
+        if (bestVoice) {
+          utterance.voice = bestVoice;
+        }
+
+        utterance.rate = safeRate;
+        utterance.pitch = safePitch;
+        utterance.volume = 1;
 
         utterance.onend = () => {
           setIsSpeaking(false);
@@ -218,8 +401,10 @@ export function useSpeech() {
           console.error('TTS error:', event.error || 'Unknown error');
         };
 
-        utteranceRef.current = utterance;
-        window.speechSynthesis.speak(utterance);
+        // Agregar un pequeño delay para evitar conflictos con cancel()
+        setTimeout(() => {
+          window.speechSynthesis.speak(utterance);
+        }, 100);
       } catch (error) {
         console.error('Error in speak function:', error);
         setIsSpeaking(false);

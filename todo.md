@@ -161,3 +161,13 @@
 - [x] Verificar si hay problemas de caché en el build de Vercel (sí, caché agresivo)
 - [ ] Forzar rebuild completo limpiando caché (agregado .vercelignore)
 - [ ] Confirmar que el backend procesa correctamente urbanLevel en produccióni\u00f3n
+
+## Voz Más Humana y Expresiva (Fase 12)
+- [x] Implementar análisis emocional avanzado del texto de Leo (detecta 7 emociones)
+- [x] Crear sistema de variación dinámica de velocidad según emoción (0.8-1.3x)
+- [x] Implementar cambios de tono que reflejen emociones (0.9-1.2x pitch)
+- [x] Agregar pausas naturales más sofisticadas (antes de puntos clave, después de preguntas)
+- [x] Simular respiraciones con pausas cortas para mayor naturalidad
+- [x] Implementar énfasis en palabras clave usando variación de pitch
+- [x] Probar voz en diferentes escenarios: alegría, tristeza, motivación, empatía
+- [ ] Resolver error synthesis-failed en algunos navegadores (limitación de Web Speech API)
