@@ -171,3 +171,14 @@
 - [x] Implementar énfasis en palabras clave usando variación de pitch
 - [x] Probar voz en diferentes escenarios: alegría, tristeza, motivación, empatía
 - [ ] Resolver error synthesis-failed en algunos navegadores (limitación de Web Speech API)
+
+## Motor de Voz Avanzado (Fase 13)
+- [x] Investigar opciones de TTS avanzados: Google Cloud TTS (WaveNet/Neural2), ElevenLabs, Azure Neural TTS, Amazon Polly Neural
+- [x] Comparar planes gratuitos y límites de cada servicio (Google: 4M gratis/mes, ElevenLabs: 10k/mes)
+- [x] Evaluar calidad de voz y naturalidad de cada opción (Google WaveNet: 4/5, ElevenLabs: 5/5)
+- [x] Seleccionar la mejor opción según costo/beneficio (Google Cloud TTS con WaveNet)
+- [x] Configurar API key y credenciales del servicio seleccionado (cuenta de servicio creada, 7 voces WaveNet disponibles)
+- [x] Implementar integración en el backend (endpoint para TTS con router tts.ts)
+- [x] Actualizar frontend para usar el nuevo motor TTS (hook useSpeech.ts actualizado)
+- [x] Probar calidad de voz con diferentes emociones y textos (5/5 tests pasados)
+- [x] Documentar costos y límites del plan gratuito vs. producción (4M caracteres gratis/mes, $4/1M en producción)
