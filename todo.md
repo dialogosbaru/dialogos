@@ -182,3 +182,30 @@
 - [x] Actualizar frontend para usar el nuevo motor TTS (hook useSpeech.ts actualizado)
 - [x] Probar calidad de voz con diferentes emociones y textos (5/5 tests pasados)
 - [x] Documentar costos y límites del plan gratuito vs. producción (4M caracteres gratis/mes, $4/1M en producción)
+
+## Selector de Nacionalidad y Tipo de Voz (Fase 14)
+- [x] Investigar voces latinoamericanas disponibles en Google Cloud TTS (Colombia, México, Argentina, etc.)
+- [x] Listar todas las voces WaveNet/Neural2 disponibles con sus características (97 voces en español, 2 regiones)
+- [x] Crear selector de nacionalidad de voz en el panel de Opciones (Latinoamérica vs España)
+- [x] Crear selector de tipo de voz (masculina/femenina)
+- [x] Implementar persistencia de preferencias de voz en localStorage
+- [x] Actualizar backend para usar la voz seleccionada por el usuario (voiceName en lugar de languageCode)
+- [x] Probar diferentes combinaciones de nacionalidad y género (es-US-Neural2-B funcionando)
+- [x] Establecer voz latinoamericana como predeterminada para Colombia (es-US-Neural2-B)
+
+## Sistema de Caché de Audio (Fase 15)
+- [x] Diseñar estrategia de caché (localStorage, IndexedDB, o memoria) - IndexedDB seleccionado
+- [x] Implementar sistema de caché con clave basada en texto + emoción + voz (audioCache.ts)
+- [x] Agregar lógica para verificar caché antes de llamar a la API (integrado en useSpeech.ts)
+- [x] Implementar límite de tamaño de caché (evitar llenar almacenamiento) - 50 MB máximo
+- [x] Agregar sistema de expiración de caché (TTL) - 7 días
+- [x] Probar rendimiento con y sin caché (primera llamada: API, segunda: caché)
+- [x] Medir reducción de llamadas a la API (100% de reducción en repeticiones)
+
+## Despliegue a Vercel con Google Cloud TTS (Fase 16)
+- [ ] Configurar variable de entorno GOOGLE_CLOUD_TTS_API_KEY en Vercel
+- [ ] Verificar que las credenciales de cuenta de servicio funcionen en producción
+- [ ] Probar la voz en Vercel con diferentes nacionalidades
+- [ ] Verificar que el caché funcione correctamente en producción
+- [ ] Monitorear uso de caracteres de Google Cloud TTS
+- [ ] Documentar límites y costos para el usuario final

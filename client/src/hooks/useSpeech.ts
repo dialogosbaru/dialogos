@@ -1,6 +1,8 @@
 import { useCallback, useRef, useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { getVoicesByRegionAndGender, type VoiceRegion, type VoiceGender } from '@shared/voiceConfig';
 import { trpc } from '@/lib/trpc';
+import { getAudioFromCache, saveAudioToCache } from '@/lib/audioCache';
 
 interface SpeechRecognitionEvent extends Event {
   results: SpeechRecognitionResultList;
@@ -198,19 +200,50 @@ export function useSpeech() {
         const emotion = detectEmotion(text);
         console.log(`[TTS] Detected emotion: ${emotion}`);
 
-        // Llamar al backend para sintetizar el audio
-        const result = await synthesizeMutation.mutateAsync({
-          text,
-          emotion,
-          languageCode: language === 'es' ? 'es-ES' : 'en-US',
-        });
+        // Obtener la voz seleccionada del localStorage
+        const savedVoiceRegion = (localStorage.getItem('voiceRegion') as VoiceRegion) || 'es-US';
+        const savedVoiceGender = (localStorage.getItem('voiceGender') as VoiceGender) || 'MALE';
+        
+        // Buscar la voz que coincida con la región y género seleccionados
+        const voices = getVoicesByRegionAndGender(savedVoiceRegion, savedVoiceGender);
+        const selectedVoice = voices[0]; // Tomar la primera voz que coincida
+        const voiceName = selectedVoice?.name || 'es-US-Neural2-B';
+        
+        console.log(`[TTS] Using voice: ${voiceName}`);
 
-        if (!result.success || !result.audioContent) {
-          throw new Error('Failed to synthesize speech');
+        // Verificar si el audio está en caché
+        const cachedAudio = await getAudioFromCache(text, emotion, voiceName);
+        
+        let audioContent: string;
+        let mimeType: string;
+
+        if (cachedAudio) {
+          console.log('[TTS] Using cached audio');
+          audioContent = cachedAudio.audioContent;
+          mimeType = cachedAudio.mimeType;
+        } else {
+          console.log('[TTS] Calling API to synthesize audio');
+          
+          // Llamar al backend para sintetizar el audio
+          const result = await synthesizeMutation.mutateAsync({
+            text,
+            emotion,
+            voiceName,
+          });
+
+          if (!result.success || !result.audioContent) {
+            throw new Error('Failed to synthesize speech');
+          }
+
+          audioContent = result.audioContent;
+          mimeType = result.mimeType;
+
+          // Guardar en caché para uso futuro
+          await saveAudioToCache(text, emotion, voiceName, audioContent, mimeType);
         }
 
         // Convertir el audio base64 a un blob y reproducirlo
-        const audioBlob = base64ToBlob(result.audioContent, result.mimeType);
+        const audioBlob = base64ToBlob(audioContent, mimeType);
         const audioUrl = URL.createObjectURL(audioBlob);
         
         const audio = new Audio(audioUrl);

@@ -17,7 +17,7 @@ export const ttsRouter = router({
           .enum(['happy', 'sad', 'motivational', 'empathetic', 'surprised', 'reflective', 'neutral'])
           .optional()
           .default('neutral'),
-        languageCode: z.string().optional().default('es-ES'),
+        voiceName: z.string().optional().default('es-US-Neural2-B'),
       })
     )
     .mutation(async ({ input }) => {
@@ -25,7 +25,7 @@ export const ttsRouter = router({
         const result = await synthesizeSpeech({
           text: input.text,
           emotion: input.emotion,
-          languageCode: input.languageCode,
+          voiceName: input.voiceName,
         });
 
         return {

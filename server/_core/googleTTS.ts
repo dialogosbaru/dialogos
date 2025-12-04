@@ -9,7 +9,7 @@ const client = new TextToSpeechClient({
 export interface TTSRequest {
   text: string;
   emotion?: 'happy' | 'sad' | 'motivational' | 'empathetic' | 'surprised' | 'reflective' | 'neutral';
-  languageCode?: string;
+  voiceName?: string; // Nombre completo de la voz (ej: es-US-Neural2-B)
 }
 
 export interface TTSResponse {
@@ -37,7 +37,7 @@ const emotionToVoiceParams = {
  * @returns Audio en formato base64 y tipo MIME
  */
 export async function synthesizeSpeech(request: TTSRequest): Promise<TTSResponse> {
-  const { text, emotion = 'neutral', languageCode = 'es-ES' } = request;
+  const { text, emotion = 'neutral', voiceName = 'es-US-Neural2-B' } = request;
 
   // Obtener parámetros de voz según la emoción
   const voiceParams = emotionToVoiceParams[emotion];
@@ -51,9 +51,9 @@ export async function synthesizeSpeech(request: TTSRequest): Promise<TTSResponse
     </speak>
   `;
 
-  // Seleccionar voz según el idioma
-  const voiceName = languageCode.startsWith('es') ? 'es-ES-Neural2-B' : 'en-US-Neural2-D';
-  const voiceLanguageCode = languageCode.startsWith('es') ? 'es-ES' : 'en-US';
+  // Extraer el código de idioma del nombre de la voz
+  // Formato: es-US-Neural2-B -> es-US
+  const voiceLanguageCode = voiceName.split('-').slice(0, 2).join('-');
 
   // Configurar la solicitud de síntesis
   const ttsRequest: google.cloud.texttospeech.v1.ISynthesizeSpeechRequest = {
