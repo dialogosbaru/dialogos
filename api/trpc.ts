@@ -22,13 +22,22 @@ let ttsClient: TextToSpeechClient | null = null;
 
 const getTTSClient = () => {
   if (!ttsClient) {
-    const apiKey = process.env.GOOGLE_CLOUD_TTS_API_KEY;
-    if (!apiKey) {
-      throw new Error("GOOGLE_CLOUD_TTS_API_KEY is not configured");
+    const projectId = process.env.GOOGLE_CLOUD_PROJECT_ID;
+    const privateKey = process.env.GOOGLE_CLOUD_PRIVATE_KEY;
+    const clientEmail = process.env.GOOGLE_CLOUD_CLIENT_EMAIL;
+    
+    if (!projectId || !privateKey || !clientEmail) {
+      throw new Error("Google Cloud credentials not configured. Please set GOOGLE_CLOUD_PROJECT_ID, GOOGLE_CLOUD_PRIVATE_KEY, and GOOGLE_CLOUD_CLIENT_EMAIL");
     }
     
-    // Parse the API key as JSON credentials
-    const credentials = JSON.parse(apiKey);
+    // Build credentials object
+    const credentials = {
+      type: "service_account",
+      project_id: projectId,
+      private_key: privateKey.replace(/\\n/g, '\n'), // Replace escaped newlines
+      client_email: clientEmail,
+    };
+    
     ttsClient = new TextToSpeechClient({ credentials });
   }
   return ttsClient;
