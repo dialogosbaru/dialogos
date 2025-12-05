@@ -209,3 +209,15 @@
 - [ ] Verificar que el caché funcione correctamente en producción
 - [ ] Monitorear uso de caracteres de Google Cloud TTS
 - [ ] Documentar límites y costos para el usuario final
+
+## Corrección de Bugs en Producción (Diciembre 2025)
+- [x] Diagnosticar error 404 en endpoint /api/trpc/tts.synthesize (api/trpc.ts no tenía el router)
+- [x] Agregar router TTS a api/trpc.ts con Google Cloud Text-to-Speech
+- [x] Implementar prompt colombiano urbano (nivel 95%) en api/trpc.ts
+- [x] Corregir problema de variables de entorno (JSON completo demasiado grande para Vercel)
+- [x] Dividir credenciales en 3 variables separadas: GOOGLE_CLOUD_PROJECT_ID, GOOGLE_CLOUD_PRIVATE_KEY, GOOGLE_CLOUD_CLIENT_EMAIL
+- [x] Modificar getTTSClient() para construir credentials object desde variables separadas
+- [x] Push de correcciones a GitHub (commits: af8820a, 76c4fb2)
+- [ ] Usuario debe agregar las 3 variables de entorno en Vercel
+- [ ] Probar TTS en producción después de agregar variables
+- [ ] Verificar que el tono colombiano funcione consistentemente
