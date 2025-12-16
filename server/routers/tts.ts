@@ -52,7 +52,7 @@ export const ttsRouter = router({
     )
     .query(async ({ input }) => {
       try {
-        const voices = await listAvailableVoices(input.languageCode);
+        const voices = await listAvailableVoices();
         return {
           success: true,
           voices: voices.map((voice) => ({

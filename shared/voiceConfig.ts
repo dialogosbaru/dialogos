@@ -1,98 +1,84 @@
 /**
- * Configuración de voces disponibles en Google Cloud TTS
+ * Voice configuration for Gemini-TTS (Vertex AI)
+ * Available voices from Google Cloud Text-to-Speech Gemini-TTS
  */
 
-export type VoiceRegion = 'es-ES' | 'es-US';
-export type VoiceGender = 'MALE' | 'FEMALE';
+export type VoiceGender = 'male' | 'female';
 
 export interface VoiceOption {
+  id: string;
   name: string;
-  region: VoiceRegion;
   gender: VoiceGender;
   label: string;
   description: string;
 }
 
 /**
- * Voces Neural2 disponibles (mejor calidad)
+ * Available Gemini-TTS voices
+ * These are the speaker_id values used in Gemini-TTS API
  */
 export const AVAILABLE_VOICES: VoiceOption[] = [
-  // Voces Latinoamericanas (es-US)
+  // Male voices (4)
   {
-    name: 'es-US-Neural2-B',
-    region: 'es-US',
-    gender: 'MALE',
-    label: 'Leo (Latinoamérica)',
-    description: 'Voz masculina con acento latinoamericano neutral'
+    id: 'Rasalgethi',
+    name: 'Rasalgethi',
+    gender: 'male',
+    label: '👨 Rasalgethi',
+    description: 'Voz masculina profunda y expresiva',
   },
   {
-    name: 'es-US-Neural2-A',
-    region: 'es-US',
-    gender: 'FEMALE',
-    label: 'Lea (Latinoamérica)',
-    description: 'Voz femenina con acento latinoamericano neutral'
+    id: 'Charon',
+    name: 'Charon',
+    gender: 'male',
+    label: '👨 Charon',
+    description: 'Voz masculina clara y natural',
   },
   {
-    name: 'es-US-Neural2-C',
-    region: 'es-US',
-    gender: 'MALE',
-    label: 'Lucas (Latinoamérica)',
-    description: 'Voz masculina alternativa con acento latinoamericano'
-  },
-  
-  // Voces de España (es-ES)
-  {
-    name: 'es-ES-Neural2-B',
-    region: 'es-ES',
-    gender: 'MALE',
-    label: 'Leo (España)',
-    description: 'Voz masculina con acento español'
+    id: 'Fenrir',
+    name: 'Fenrir',
+    gender: 'male',
+    label: '👨 Fenrir',
+    description: 'Voz masculina cálida y amigable',
   },
   {
-    name: 'es-ES-Neural2-A',
-    region: 'es-ES',
-    gender: 'FEMALE',
-    label: 'Lea (España)',
-    description: 'Voz femenina con acento español'
+    id: 'Alnilam',
+    name: 'Alnilam',
+    gender: 'male',
+    label: '👨 Alnilam',
+    description: 'Voz masculina enérgica y dinámica',
+  },
+  // Female voices (2)
+  {
+    id: 'Kore',
+    name: 'Kore',
+    gender: 'female',
+    label: '👩 Kore',
+    description: 'Voz femenina clara y expresiva',
   },
   {
-    name: 'es-ES-Neural2-F',
-    region: 'es-ES',
-    gender: 'MALE',
-    label: 'Felipe (España)',
-    description: 'Voz masculina alternativa con acento español'
+    id: 'Zephyr',
+    name: 'Zephyr',
+    gender: 'female',
+    label: '👩 Zephyr',
+    description: 'Voz femenina suave y natural',
   },
 ];
 
 /**
- * Voz predeterminada (Latinoamérica, masculina)
+ * Default voice (Rasalgethi - male)
  */
-export const DEFAULT_VOICE = AVAILABLE_VOICES[0]; // es-US-Neural2-B
+export const DEFAULT_VOICE = AVAILABLE_VOICES[0];
 
 /**
- * Obtiene una voz por nombre
+ * Get voice by ID
  */
-export function getVoiceByName(name: string): VoiceOption | undefined {
-  return AVAILABLE_VOICES.find(voice => voice.name === name);
+export function getVoiceById(id: string): VoiceOption | undefined {
+  return AVAILABLE_VOICES.find((voice) => voice.id === id);
 }
 
 /**
- * Obtiene voces filtradas por región
- */
-export function getVoicesByRegion(region: VoiceRegion): VoiceOption[] {
-  return AVAILABLE_VOICES.filter(voice => voice.region === region);
-}
-
-/**
- * Obtiene voces filtradas por género
+ * Get voices by gender
  */
 export function getVoicesByGender(gender: VoiceGender): VoiceOption[] {
-  return AVAILABLE_VOICES.filter(voice => voice.gender === gender);
-}
-
-/**
- * Obtiene voces filtradas por región y género
- */
-export function getVoicesByRegionAndGender(region: VoiceRegion, gender: VoiceGender): VoiceOption[] {
-  return AVAILABLE_VOICES.filter(voice => voice.region === region && voice.gender === gender);
+  return AVAILABLE_VOICES.filter((voice) => voice.gender === gender);
 }

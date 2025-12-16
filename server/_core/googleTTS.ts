@@ -2,14 +2,42 @@ import { TextToSpeechClient } from '@google-cloud/text-to-speech';
 import type { google } from '@google-cloud/text-to-speech/build/protos/protos';
 
 // Inicializar cliente de Google Cloud TTS con credenciales de la cuenta de servicio
-const client = new TextToSpeechClient({
-  credentials: JSON.parse(process.env.GOOGLE_CLOUD_TTS_API_KEY || '{}'),
-});
+let client: TextToSpeechClient;
+
+function initializeClient() {
+  if (!client) {
+    // Check if we have separate env vars or JSON
+    const projectId = process.env.GOOGLE_CLOUD_PROJECT_ID;
+    const privateKey = process.env.GOOGLE_CLOUD_PRIVATE_KEY;
+    const clientEmail = process.env.GOOGLE_CLOUD_CLIENT_EMAIL;
+
+    if (projectId && privateKey && clientEmail) {
+      // Use separate env vars
+      client = new TextToSpeechClient({
+        credentials: {
+          client_email: clientEmail,
+          private_key: privateKey.replace(/\\n/g, '\n'),
+        },
+        projectId,
+      });
+    } else {
+      // Fallback to JSON (for development)
+      const jsonKey = process.env.GOOGLE_CLOUD_TTS_API_KEY;
+      if (!jsonKey) {
+        throw new Error('Google Cloud credentials not configured. Please set GOOGLE_CLOUD_PROJECT_ID, GOOGLE_CLOUD_PRIVATE_KEY, and GOOGLE_CLOUD_CLIENT_EMAIL');
+      }
+      client = new TextToSpeechClient({
+        credentials: JSON.parse(jsonKey),
+      });
+    }
+  }
+  return client;
+}
 
 export interface TTSRequest {
   text: string;
   emotion?: 'happy' | 'sad' | 'motivational' | 'empathetic' | 'surprised' | 'reflective' | 'neutral';
-  voiceName?: string; // Nombre completo de la voz (ej: es-US-Neural2-B)
+  voiceName?: string; // Voice ID de Chirp 3: HD (ej: Rasalgethi, Kore, Charon)
 }
 
 export interface TTSResponse {
@@ -18,64 +46,38 @@ export interface TTSResponse {
 }
 
 /**
- * Mapeo de emociones a parámetros de voz de Google Cloud TTS
- * Usa SSML para controlar velocidad (speaking rate) y tono (pitch)
- */
-const emotionToVoiceParams = {
-  happy: { rate: 1.15, pitch: 2.0 },
-  sad: { rate: 0.85, pitch: -2.0 },
-  motivational: { rate: 1.1, pitch: 1.5 },
-  empathetic: { rate: 0.95, pitch: -0.5 },
-  surprised: { rate: 1.2, pitch: 3.0 },
-  reflective: { rate: 0.9, pitch: -1.0 },
-  neutral: { rate: 1.0, pitch: 0.0 },
-};
-
-/**
- * Genera audio usando Google Cloud Text-to-Speech con WaveNet
+ * Genera audio usando Chirp 3: HD (Google Cloud Text-to-Speech)
  * @param request - Texto a sintetizar y parámetros opcionales
  * @returns Audio en formato base64 y tipo MIME
  */
 export async function synthesizeSpeech(request: TTSRequest): Promise<TTSResponse> {
-  const { text, emotion = 'neutral', voiceName = 'es-US-Neural2-B' } = request;
+  const { text, emotion = 'neutral', voiceName = 'Rasalgethi' } = request;
 
-  // Obtener parámetros de voz según la emoción
-  const voiceParams = emotionToVoiceParams[emotion];
+  // Inicializar cliente
+  const ttsClient = initializeClient();
 
-  // Construir SSML para controlar velocidad y tono
-  const ssmlText = `
-    <speak>
-      <prosody rate="${voiceParams.rate}" pitch="${voiceParams.pitch > 0 ? '+' : ''}${voiceParams.pitch}st">
-        ${text}
-      </prosody>
-    </speak>
-  `;
-
-  // Extraer el código de idioma del nombre de la voz
-  // Formato: es-US-Neural2-B -> es-US
-  const voiceLanguageCode = voiceName.split('-').slice(0, 2).join('-');
-
-  // Configurar la solicitud de síntesis
+  // Configurar la solicitud de síntesis con Chirp 3: HD
   const ttsRequest: google.cloud.texttospeech.v1.ISynthesizeSpeechRequest = {
-    input: { ssml: ssmlText },
+    input: { 
+      text: text,
+    },
     voice: {
-      languageCode: voiceLanguageCode,
-      name: voiceName,
-      ssmlGender: 'MALE',
+      languageCode: 'es-US', // Chirp 3: HD usa es-US para español latinoamericano
+      name: `es-US-Chirp3-HD-${voiceName}`, // Formato: es-US-Chirp3-HD-Rasalgethi
     },
     audioConfig: {
       audioEncoding: 'MP3',
-      speakingRate: 1.0, // Ya controlado por SSML, pero podemos ajustar aquí también
-      pitch: 0.0, // Ya controlado por SSML
     },
   };
 
   try {
-    // Llamar a la API de Google Cloud TTS
-    const [response] = await client.synthesizeSpeech(ttsRequest);
+    console.log(`[Chirp 3: HD] Synthesizing speech with voice: ${voiceName}`);
+    
+    // Llamar a la API de Google Cloud TTS con Chirp 3: HD
+    const [response] = await ttsClient.synthesizeSpeech(ttsRequest);
 
     if (!response.audioContent) {
-      throw new Error('No audio content received from Google Cloud TTS');
+      throw new Error('No audio content received from Chirp 3: HD');
     }
 
     // Convertir el audio a base64
@@ -86,22 +88,24 @@ export async function synthesizeSpeech(request: TTSRequest): Promise<TTSResponse
       mimeType: 'audio/mpeg',
     };
   } catch (error) {
-    console.error('[Google TTS] Error synthesizing speech:', error);
+    console.error('[Chirp 3: HD] Error synthesizing speech:', error);
     throw new Error(`Failed to synthesize speech: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 
 /**
- * Lista las voces disponibles en Google Cloud TTS para un idioma específico
- * @param languageCode - Código de idioma (e.g., 'es-ES', 'en-US')
+ * Lista las voces disponibles en Chirp 3: HD
  * @returns Lista de voces disponibles
  */
-export async function listAvailableVoices(languageCode: string = 'es-ES') {
+export async function listAvailableVoices() {
   try {
-    const [response] = await client.listVoices({ languageCode });
+    const ttsClient = initializeClient();
+    const [response] = await ttsClient.listVoices({ 
+      languageCode: 'es-US',
+    });
     return response.voices || [];
   } catch (error) {
-    console.error('[Google TTS] Error listing voices:', error);
+    console.error('[Chirp 3: HD] Error listing voices:', error);
     throw new Error(`Failed to list voices: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }

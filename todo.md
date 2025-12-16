@@ -221,3 +221,15 @@
 - [ ] Usuario debe agregar las 3 variables de entorno en Vercel
 - [ ] Probar TTS en producción después de agregar variables
 - [ ] Verificar que el tono colombiano funcione consistentemente
+
+## Implementar Chirp 3: HD con Múltiples Voces (Diciembre 2025)
+- [x] Investigar voces disponibles en Chirp 3: HD (30 voces encontradas)
+- [x] Confirmar que Rasalgethi está disponible con las credenciales actuales (confirmado)
+- [x] Listar al menos 6 voces: 4 masculinas y 2 femeninas (Rasalgethi, Charon, Fenrir, Alnilam, Kore, Zephyr)
+- [x] Actualizar código de TTS para usar Chirp 3: HD (googleTTS.ts actualizado con formato es-US-Chirp3-HD-{voice})
+- [x] Modificar OptionsPanel para mostrar selector desplegable de voces (Select component implementado)
+- [x] Actualizar shared/voiceConfig.ts con las nuevas voces de Chirp 3: HD (6 voces configuradas)
+- [x] Probar selector de voces en desarrollo (funcionando correctamente)
+- [x] Actualizar api/trpc.ts para Vercel con Chirp 3: HD (usando formato correcto)
+- [x] Crear y ejecutar tests de integración (5/5 tests pasados: Rasalgethi, Kore, Charon, emociones, texto largo)
+- [ ] Desplegar a producción y verificar funcionamiento con Chirp 3: HD

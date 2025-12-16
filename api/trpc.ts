@@ -53,49 +53,38 @@ const ttsRouter = router({
           .enum(['happy', 'sad', 'motivational', 'empathetic', 'surprised', 'reflective', 'neutral'])
           .optional()
           .default('neutral'),
-        voiceName: z.string().optional().default('es-US-Neural2-B'),
+        voiceName: z.string().optional().default('Rasalgethi'),
       })
     )
     .mutation(async ({ input }) => {
       try {
         const client = getTTSClient();
         
-        // Emotion-based voice adjustments
-        const emotionConfig: Record<string, { rate: number; pitch: number }> = {
-          happy: { rate: 1.15, pitch: 1.1 },
-          sad: { rate: 0.85, pitch: 0.9 },
-          motivational: { rate: 1.2, pitch: 1.15 },
-          empathetic: { rate: 0.95, pitch: 0.95 },
-          surprised: { rate: 1.25, pitch: 1.2 },
-          reflective: { rate: 0.9, pitch: 0.95 },
-          neutral: { rate: 1.0, pitch: 1.0 },
+        // Emotion-based prompts for Gemini-TTS
+        const emotionPrompts: Record<string, string> = {
+          happy: 'Speak with an enthusiastic, upbeat, and joyful tone',
+          sad: 'Speak with a gentle, soft, and empathetic tone',
+          motivational: 'Speak with an energetic, confident, and inspiring tone',
+          empathetic: 'Speak with a warm, understanding, and compassionate tone',
+          surprised: 'Speak with an excited, amazed, and surprised tone',
+          reflective: 'Speak with a thoughtful, calm, and contemplative tone',
+          neutral: 'Speak with a natural, clear, and conversational tone',
         };
 
-        const config = emotionConfig[input.emotion];
-        
-        // Build SSML with emotion adjustments
-        const ssml = `
-          <speak>
-            <prosody rate="${config.rate}" pitch="${config.pitch * 100 - 100}%">
-              ${input.text}
-            </prosody>
-          </speak>
-        `;
+        const stylePrompt = emotionPrompts[input.emotion];
 
-        // Extract language code from voice name (e.g., "es-US-Neural2-B" -> "es-US")
-        const languageCode = input.voiceName.split('-').slice(0, 2).join('-');
-
+        // Use Gemini-TTS with speaker_id
         const [response] = await client.synthesizeSpeech({
-          input: { ssml },
+          input: { text: input.text },
           voice: {
-            languageCode,
-            name: input.voiceName,
+            languageCode: 'es-US', // Chirp 3: HD uses es-US for Latin American Spanish
+            name: `es-US-Chirp3-HD-${input.voiceName}`, // Format: es-US-Chirp3-HD-Rasalgethi
           },
           audioConfig: {
             audioEncoding: 'MP3',
-            speakingRate: 1.0,
-            pitch: 0,
           },
+          // @ts-ignore - Add prompt for Gemini-TTS
+          prompt: stylePrompt,
         });
 
         if (!response.audioContent) {

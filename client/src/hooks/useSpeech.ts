@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState, useEffect } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { getVoicesByRegionAndGender, type VoiceRegion, type VoiceGender } from '@shared/voiceConfig';
+import { getVoiceById, DEFAULT_VOICE } from '@shared/voiceConfig';
 import { trpc } from '@/lib/trpc';
 import { getAudioFromCache, saveAudioToCache } from '@/lib/audioCache';
 
@@ -201,13 +201,9 @@ export function useSpeech() {
         console.log(`[TTS] Detected emotion: ${emotion}`);
 
         // Obtener la voz seleccionada del localStorage
-        const savedVoiceRegion = (localStorage.getItem('voiceRegion') as VoiceRegion) || 'es-US';
-        const savedVoiceGender = (localStorage.getItem('voiceGender') as VoiceGender) || 'MALE';
-        
-        // Buscar la voz que coincida con la región y género seleccionados
-        const voices = getVoicesByRegionAndGender(savedVoiceRegion, savedVoiceGender);
-        const selectedVoice = voices[0]; // Tomar la primera voz que coincida
-        const voiceName = selectedVoice?.name || 'es-US-Neural2-B';
+        const savedVoiceId = localStorage.getItem('selectedVoiceId') || DEFAULT_VOICE.id;
+        const selectedVoice = getVoiceById(savedVoiceId) || DEFAULT_VOICE;
+        const voiceName = selectedVoice.id;
         
         console.log(`[TTS] Using voice: ${voiceName}`);
 

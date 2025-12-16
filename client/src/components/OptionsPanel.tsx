@@ -14,7 +14,8 @@ import { Slider } from "@/components/ui/slider";
 import { Settings } from "lucide-react";
 import { colorPalettes, applyColorPalette, getPaletteById } from "@/lib/colorPalettes";
 import type { Language } from "@/contexts/LanguageContext";
-import { AVAILABLE_VOICES, DEFAULT_VOICE, type VoiceRegion, type VoiceGender, getVoicesByRegionAndGender } from "@shared/voiceConfig";
+import { AVAILABLE_VOICES, DEFAULT_VOICE, getVoiceById } from "@shared/voiceConfig";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface OptionsPanelProps {
   currentLanguage: Language;
@@ -24,8 +25,7 @@ interface OptionsPanelProps {
 export default function OptionsPanel({ currentLanguage, onLanguageChange }: OptionsPanelProps) {
   const [selectedPalette, setSelectedPalette] = useState<string>("beige-cream");
   const [urbanLevel, setUrbanLevel] = useState<number>(50);
-  const [voiceRegion, setVoiceRegion] = useState<VoiceRegion>("es-US");
-  const [voiceGender, setVoiceGender] = useState<VoiceGender>("MALE");
+  const [selectedVoiceId, setSelectedVoiceId] = useState<string>(DEFAULT_VOICE.id);
   const [open, setOpen] = useState(false);
 
   // Load saved palette and urban level from localStorage on mount
@@ -44,14 +44,9 @@ export default function OptionsPanel({ currentLanguage, onLanguageChange }: Opti
       setUrbanLevel(parseInt(savedUrbanLevel, 10));
     }
 
-    const savedVoiceRegion = localStorage.getItem("voiceRegion") as VoiceRegion;
-    if (savedVoiceRegion) {
-      setVoiceRegion(savedVoiceRegion);
-    }
-
-    const savedVoiceGender = localStorage.getItem("voiceGender") as VoiceGender;
-    if (savedVoiceGender) {
-      setVoiceGender(savedVoiceGender);
+    const savedVoiceId = localStorage.getItem("selectedVoiceId");
+    if (savedVoiceId) {
+      setSelectedVoiceId(savedVoiceId);
     }
   }, []);
 
@@ -82,16 +77,9 @@ export default function OptionsPanel({ currentLanguage, onLanguageChange }: Opti
     return "Muy urbano";
   };
 
-  const handleVoiceRegionChange = (region: string) => {
-    const newRegion = region as VoiceRegion;
-    setVoiceRegion(newRegion);
-    localStorage.setItem("voiceRegion", newRegion);
-  };
-
-  const handleVoiceGenderChange = (gender: string) => {
-    const newGender = gender as VoiceGender;
-    setVoiceGender(newGender);
-    localStorage.setItem("voiceGender", newGender);
+  const handleVoiceChange = (voiceId: string) => {
+    setSelectedVoiceId(voiceId);
+    localStorage.setItem("selectedVoiceId", voiceId);
   };
 
   return (
@@ -130,47 +118,26 @@ export default function OptionsPanel({ currentLanguage, onLanguageChange }: Opti
             </RadioGroup>
           </div>
 
-          {/* Voice Region Selection */}
+          {/* Voice Selection */}
           <div className="space-y-3">
-            <Label className="text-base font-semibold">Acento de Voz</Label>
-            <RadioGroup value={voiceRegion} onValueChange={handleVoiceRegionChange}>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="es-US" id="region-us" />
-                <Label htmlFor="region-us" className="cursor-pointer">
-                  🌎 Latinoamérica (Neutral)
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="es-ES" id="region-es" />
-                <Label htmlFor="region-es" className="cursor-pointer">
-                  🇪🇸 España
-                </Label>
-              </div>
-            </RadioGroup>
+            <Label className="text-base font-semibold">Voz de Leo</Label>
+            <Select value={selectedVoiceId} onValueChange={handleVoiceChange}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Selecciona una voz" />
+              </SelectTrigger>
+              <SelectContent>
+                {AVAILABLE_VOICES.map((voice) => (
+                  <SelectItem key={voice.id} value={voice.id}>
+                    <div className="flex flex-col">
+                      <span className="font-medium">{voice.label}</span>
+                      <span className="text-xs text-muted-foreground">{voice.description}</span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <p className="text-sm text-muted-foreground">
-              Elige el acento que prefieras para la voz de Leo
-            </p>
-          </div>
-
-          {/* Voice Gender Selection */}
-          <div className="space-y-3">
-            <Label className="text-base font-semibold">Tipo de Voz</Label>
-            <RadioGroup value={voiceGender} onValueChange={handleVoiceGenderChange}>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="MALE" id="gender-male" />
-                <Label htmlFor="gender-male" className="cursor-pointer">
-                  👨 Masculina
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="FEMALE" id="gender-female" />
-                <Label htmlFor="gender-female" className="cursor-pointer">
-                  👩 Femenina
-                </Label>
-              </div>
-            </RadioGroup>
-            <p className="text-sm text-muted-foreground">
-              Selecciona si prefieres una voz masculina o femenina
+              Elige la voz que prefieras para Leo (Gemini-TTS)
             </p>
           </div>
 
