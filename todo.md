@@ -233,3 +233,20 @@
 - [x] Actualizar api/trpc.ts para Vercel con Chirp 3: HD (usando formato correcto)
 - [x] Crear y ejecutar tests de integración (5/5 tests pasados: Rasalgethi, Kore, Charon, emociones, texto largo)
 - [ ] Desplegar a producción y verificar funcionamiento con Chirp 3: HD
+
+## Sistema de Detección de Contenido Peligroso (Diciembre 2025)
+- [x] Diseñar lista de patrones de comportamiento peligrosos (autolesión, violencia, contenido ilegal, abuso, etc.)
+- [x] Implementar detector de contenido peligroso en el prompt de Leo (api/trpc.ts y server/routers/chat.ts)
+- [x] Crear respuestas de rechazo empáticas pero firmes ("Ey parcero, de eso no voy a hablar...")
+- [x] Implementar cambio automático de tema después del rechazo (pregunta sobre tiempo libre)
+- [x] Probar con diferentes escenarios peligrosos (hipotéticos y directos) - Funciona perfectamente
+- [x] Verificar que Leo nunca participe en conversaciones peligrosas - Confirmado
+
+## Sistema Anti-Aburrimiento Inteligente (Diciembre 2025)
+- [x] Diseñar detector de conversaciones repetitivas (palabras clave, patrones)
+- [x] Implementar análisis de emociones en el historial de conversación
+- [x] Identificar temas que generaron alegría en conversaciones anteriores
+- [x] Crear lógica de cambio automático de tema cuando se detecte aburrimiento (api/trpc.ts y server/routers/chat.ts)
+- [x] Implementar transiciones naturales a temas alegres del historial ("Cambiemos de rollo, ¿te acordás cuando...")
+- [x] Probar con conversaciones repetitivas y aburridas ("Sí, está bien") - Funciona perfectamente
+- [x] Verificar que Leo cambie de tema de manera natural y oportuna - Confirmado
