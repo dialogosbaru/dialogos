@@ -250,3 +250,17 @@
 - [x] Implementar transiciones naturales a temas alegres del historial ("Cambiemos de rollo, ¿te acordás cuando...")
 - [x] Probar con conversaciones repetitivas y aburridas ("Sí, está bien") - Funciona perfectamente
 - [x] Verificar que Leo cambie de tema de manera natural y oportuna - Confirmado
+
+## Bug Crítico - tRPC Devuelve HTML en Lugar de JSON (Diciembre 2025)
+- [ ] Diagnosticar por qué el servidor devuelve HTML en lugar de JSON
+- [ ] Verificar configuración de rutas en server/_core/index.ts
+- [ ] Corregir manejo de rutas de API en el servidor
+- [ ] Probar que el endpoint /trpc funcione correctamente
+- [ ] Verificar que Gemini API responda con JSON válido
+
+## Bug - Slider de Nivel Urbano No Cambia el Lenguaje (Diciembre 2025)
+- [ ] Diagnosticar por qué el slider de nivel urbano no afecta las respuestas de Leo
+- [ ] Verificar que urbanLevel se esté enviando correctamente desde el frontend
+- [ ] Revisar la lógica de selección de prompt en api/trpc.ts
+- [ ] Corregir la condición que determina qué prompt usar según urbanLevel
+- [ ] Probar con diferentes niveles (0%, 50%, 100%) y verificar cambios en el lenguaje
