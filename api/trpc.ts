@@ -287,13 +287,10 @@ const chatRouter = router({
             code: "INTERNAL_SERVER_ERROR",
             message: "Groq API key not configured",
           });
-                // Generar prompt dinámico según urbanLevel
-        const systemPrompt = getSystemPromptByUrbanLevel(urbanLevel);, "ok")
-- Mismas preguntas o respuestas varias veces
-- Falta de emoción o energía en el mensaje
-- Temas que no generan interés
-
-Responde siempre en el idioma del usuario (español o inglés).`;
+        }
+        
+        // Generar prompt dinámico según urbanLevel
+        const systemPrompt = getSystemPromptByUrbanLevel(urbanLevel);
 
         // Call Groq API (OpenAI-compatible)
         const response = await fetch(
