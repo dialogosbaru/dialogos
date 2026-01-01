@@ -4,6 +4,7 @@ import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import superjson from "superjson";
 import { z } from "zod";
 import { TextToSpeechClient } from "@google-cloud/text-to-speech";
+import { serverMemoryService } from "../server/memoryService";
 
 // Constants
 const COOKIE_NAME = "session";
@@ -269,7 +270,7 @@ const chatRouter = router({
   message: publicProcedure
     .input((val: unknown) => {
       if (typeof val === "object" && val !== null && "message" in val) {
-        return val as { message: string; urbanLevel?: number };
+        return val as { message: string; urbanLevel?: number; userId?: string; conversationId?: string };
       }
       throw new TRPCError({
         code: "BAD_REQUEST",
@@ -277,7 +278,7 @@ const chatRouter = router({
       });
     })
     .mutation(async ({ input }) => {
-      const { message, urbanLevel = 95 } = input;
+      const { message, urbanLevel = 95, userId, conversationId } = input;
 
       try {
         // Get API key from environment
@@ -290,7 +291,18 @@ const chatRouter = router({
         }
         
         // Generar prompt dinámico según urbanLevel
-        const systemPrompt = getSystemPromptByUrbanLevel(urbanLevel);
+        let systemPrompt = getSystemPromptByUrbanLevel(urbanLevel);
+        
+        // Add user context if userId is provided
+        if (userId) {
+          const userContext = await serverMemoryService.buildUserContext(userId);
+          if (userContext) {
+            systemPrompt += userContext;
+          }
+          
+          // Extract and save information from user message
+          await serverMemoryService.extractAndSaveInfo(userId, message, conversationId);
+        }
 
         // Call Groq API (OpenAI-compatible)
         const response = await fetch(

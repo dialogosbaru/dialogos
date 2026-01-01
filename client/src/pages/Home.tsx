@@ -6,8 +6,10 @@ import { useConversationHistory } from '@/hooks/useConversationHistory';
 import { useSpeech } from '@/hooks/useSpeech';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { trpc } from '@/lib/trpc';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Home() {
+  const { user } = useAuth();
   const { messages, addMessage, clearHistory, isLoading, isOnboarding, handleOnboardingResponse, currentConversationId } = useConversationHistory();
   const { isListening, isSpeaking, transcript, setTranscript, startListening, stopListening, speak, stopSpeaking } = useSpeech();
   const { t } = useLanguage();
@@ -72,7 +74,9 @@ export default function Home() {
         message: messageText,
         conversationHistory: messages,
         urbanLevel: urbanLevel,
-      });
+        ...(user?.id && { userId: user.id }),
+        ...(currentConversationId && { conversationId: currentConversationId }),
+      } as any);
     } catch (error) {
       console.error('Error sending message:', error);
     }

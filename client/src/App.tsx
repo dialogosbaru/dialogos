@@ -8,6 +8,7 @@ import { LanguageProvider } from "./contexts/LanguageContext";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Home from "./pages/Home";
 import Landing from "./pages/Landing";
+import Profile from "./pages/Profile";
 import { useEffect } from "react";
 import { applyColorPalette, getPaletteById } from "./lib/colorPalettes";
 
@@ -33,9 +34,13 @@ function ProtectedRoute({ component: Component }: { component: React.ComponentTy
 }
 
 function Router() {
+  const { user } = useAuth();
+  
   return (
     <Switch>
-      <Route path={"/"} component={() => <ProtectedRoute component={Home} />} />
+      <Route path={"/"} component={user ? () => <ProtectedRoute component={Home} /> : Landing} />
+      <Route path={"/chat"} component={() => <ProtectedRoute component={Home} />} />
+      <Route path={"/perfil"} component={() => <ProtectedRoute component={Profile} />} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

@@ -1,7 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { Trash2, LogOut } from 'lucide-react';
+import { Trash2, LogOut, User } from 'lucide-react';
+import { useLocation } from 'wouter';
 import { APP_TITLE } from '@/const';
 import OptionsPanel from '@/components/OptionsPanel';
 import { toast } from 'sonner';
@@ -13,6 +14,7 @@ interface ChatHeaderProps {
 export function ChatHeader({ onClearHistory }: ChatHeaderProps) {
   const { language, setLanguage, t } = useLanguage();
   const { signOut, user } = useAuth();
+  const [, setLocation] = useLocation();
 
   const handleSignOut = async () => {
     await signOut();
@@ -45,6 +47,17 @@ export function ChatHeader({ onClearHistory }: ChatHeaderProps) {
               <span className="hidden sm:inline">{t('chat.clear')}</span>
             </Button>
           )}
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setLocation('/perfil')}
+            className="gap-2"
+            title="Mi perfil"
+          >
+            <User className="h-4 w-4" />
+            <span className="hidden sm:inline">Perfil</span>
+          </Button>
 
           <Button
             variant="outline"

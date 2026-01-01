@@ -320,3 +320,16 @@
 - [x] Extraer y guardar respuestas en la tabla personal_info
 - [x] Marcar usuario como "onboarding completado" para no repetir el proceso
 - [ ] Integrar respuestas del onboarding en el contexto de Leo para futuras conversaciones
+
+## Mejoras Finales
+- [x] Integrar contexto de memoria en prompts de Leo (cargar desde memoryService.buildUserContext())
+- [x] Crear página de perfil de usuario (/perfil)
+- [x] Mostrar información personal guardada en el perfil
+- [ ] Permitir editar información personal desde el perfil
+- [x] Mostrar historial de conversaciones en el perfil
+- [x] Implementar análisis de sentimientos en mensajes del usuario
+- [x] Extraer automáticamente información relevante de conversaciones
+- [x] Guardar emociones detectadas en personal_info
+- [ ] Configurar token de GitHub para despliegue
+- [ ] Hacer push a GitHub
+- [ ] Verificar despliegue en Vercel
