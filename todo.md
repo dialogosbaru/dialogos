@@ -264,3 +264,59 @@
 - [ ] Revisar la lógica de selección de prompt en api/trpc.ts
 - [ ] Corregir la condición que determina qué prompt usar según urbanLevel
 - [ ] Probar con diferentes niveles (0%, 50%, 100%) y verificar cambios en el lenguaje
+
+## Integración de Supabase y Sistema de Autenticación (Fase 17)
+- [x] Configurar cliente de Supabase en el proyecto
+- [x] Crear esquema de base de datos (usuarios, perfiles, conversaciones, memoria)
+- [x] Configurar variables de entorno para Supabase
+- [x] Probar conexión con Supabase
+- [x] Implementar registro de usuarios con email
+- [x] Implementar inicio de sesión
+- [x] Implementar verificación de email
+- [x] Crear contexto de autenticación en React
+- [x] Implementar protección de rutas (solo usuarios autenticados acceden a Leo)
+- [x] Crear componente de modal de autenticación
+
+## Landing Page Minimalista (Fase 18)
+- [x] Diseñar hero section con animación de fondo gradiente
+- [x] Crear título emotivo: "Leo está aquí para escucharte"
+- [x] Crear subtítulo cálido explicando el propósito de Leo
+- [x] Crear 3 cards con iconos: 🧠 "Te recuerda", 💬 "Conversaciones naturales", 🎨 "Personalizable"
+- [x] Implementar CTA principal: "Comenzar a conversar"
+- [x] Crear footer minimalista
+- [x] Hacer responsive el landing
+- [x] Agregar micro-interacciones y animaciones suaves
+
+## Sistema de Memoria para Leo (Fase 19)
+- [ ] Crear tabla de memoria a corto plazo (conversación actual)
+- [ ] Crear tabla de memoria a largo plazo (datos persistentes del usuario)
+- [ ] Implementar extracción de información relevante (nombres, preferencias, gustos)
+- [ ] Integrar memoria con prompts de Leo
+- [ ] Crear sistema de recuperación de contexto
+- [ ] Implementar análisis de conversaciones para extraer datos personales
+- [ ] Guardar información importante automáticamente
+
+## Migración de Preferencias a Supabase (Fase 20)
+- [ ] Migrar nivel urbano de localStorage a Supabase
+- [ ] Migrar voz seleccionada de localStorage a Supabase
+- [ ] Migrar idioma de localStorage a Supabase
+- [ ] Migrar paleta de colores de localStorage a Supabase
+- [ ] Sincronizar preferencias entre dispositivos
+- [ ] Implementar carga de preferencias al iniciar sesión
+
+## Testing y Despliegue Final (Fase 21)
+- [ ] Escribir tests para autenticación
+- [ ] Escribir tests para sistema de memoria
+- [ ] Probar flujo completo de usuario (registro → login → conversación)
+- [ ] Verificar sincronización de preferencias
+- [ ] Verificar funcionamiento en producción
+- [ ] Crear checkpoint final
+- [ ] Desplegar a Vercel
+
+## Onboarding Conversacional (Fase Nueva)
+- [x] Diseñar 5 preguntas clave para conocer al usuario nuevo
+- [x] Implementar lógica para detectar si es la primera conversación del usuario
+- [x] Crear flujo de onboarding que haga las 5 preguntas secuencialmente
+- [x] Extraer y guardar respuestas en la tabla personal_info
+- [x] Marcar usuario como "onboarding completado" para no repetir el proceso
+- [ ] Integrar respuestas del onboarding en el contexto de Leo para futuras conversaciones

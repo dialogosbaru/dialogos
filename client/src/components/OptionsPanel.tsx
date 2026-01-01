@@ -16,6 +16,8 @@ import { colorPalettes, applyColorPalette, getPaletteById } from "@/lib/colorPal
 import type { Language } from "@/contexts/LanguageContext";
 import { AVAILABLE_VOICES, DEFAULT_VOICE, getVoiceById } from "@shared/voiceConfig";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useUserPreferences } from "@/hooks/useUserPreferences";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface OptionsPanelProps {
   currentLanguage: Language;
@@ -23,39 +25,59 @@ interface OptionsPanelProps {
 }
 
 export default function OptionsPanel({ currentLanguage, onLanguageChange }: OptionsPanelProps) {
+  const { user } = useAuth();
+  const { preferences, updatePreferences } = useUserPreferences();
   const [selectedPalette, setSelectedPalette] = useState<string>("beige-cream");
   const [urbanLevel, setUrbanLevel] = useState<number>(50);
   const [selectedVoiceId, setSelectedVoiceId] = useState<string>(DEFAULT_VOICE.id);
   const [open, setOpen] = useState(false);
 
-  // Load saved palette and urban level from localStorage on mount
+  // Load preferences from Supabase or localStorage
   useEffect(() => {
-    const savedPalette = localStorage.getItem("colorPalette");
-    if (savedPalette) {
-      setSelectedPalette(savedPalette);
-      const palette = getPaletteById(savedPalette);
+    if (preferences) {
+      // Load from Supabase
+      setSelectedPalette(preferences.color_palette);
+      setUrbanLevel(preferences.urban_level);
+      setSelectedVoiceId(preferences.voice_name);
+      
+      const palette = getPaletteById(preferences.color_palette);
       if (palette) {
         applyColorPalette(palette);
       }
-    }
-    
-    const savedUrbanLevel = localStorage.getItem("urbanLevel");
-    if (savedUrbanLevel) {
-      setUrbanLevel(parseInt(savedUrbanLevel, 10));
-    }
+    } else if (!user) {
+      // Load from localStorage for non-authenticated users
+      const savedPalette = localStorage.getItem("colorPalette");
+      if (savedPalette) {
+        setSelectedPalette(savedPalette);
+        const palette = getPaletteById(savedPalette);
+        if (palette) {
+          applyColorPalette(palette);
+        }
+      }
+      
+      const savedUrbanLevel = localStorage.getItem("urbanLevel");
+      if (savedUrbanLevel) {
+        setUrbanLevel(parseInt(savedUrbanLevel, 10));
+      }
 
-    const savedVoiceId = localStorage.getItem("selectedVoiceId");
-    if (savedVoiceId) {
-      setSelectedVoiceId(savedVoiceId);
+      const savedVoiceId = localStorage.getItem("selectedVoiceId");
+      if (savedVoiceId) {
+        setSelectedVoiceId(savedVoiceId);
+      }
     }
-  }, []);
+  }, [preferences, user]);
 
   const handlePaletteChange = (paletteId: string) => {
     setSelectedPalette(paletteId);
     const palette = getPaletteById(paletteId);
     if (palette) {
       applyColorPalette(palette);
-      localStorage.setItem("colorPalette", paletteId);
+      
+      if (user) {
+        updatePreferences({ color_palette: paletteId });
+      } else {
+        localStorage.setItem("colorPalette", paletteId);
+      }
     }
   };
 
@@ -66,7 +88,12 @@ export default function OptionsPanel({ currentLanguage, onLanguageChange }: Opti
   const handleUrbanLevelChange = (value: number[]) => {
     const newLevel = value[0];
     setUrbanLevel(newLevel);
-    localStorage.setItem("urbanLevel", newLevel.toString());
+    
+    if (user) {
+      updatePreferences({ urban_level: newLevel });
+    } else {
+      localStorage.setItem("urbanLevel", newLevel.toString());
+    }
   };
 
   const getUrbanLevelLabel = (level: number): string => {
@@ -79,7 +106,16 @@ export default function OptionsPanel({ currentLanguage, onLanguageChange }: Opti
 
   const handleVoiceChange = (voiceId: string) => {
     setSelectedVoiceId(voiceId);
-    localStorage.setItem("selectedVoiceId", voiceId);
+    
+    const voice = getVoiceById(voiceId);
+    if (voice && user) {
+      updatePreferences({
+        voice_name: voice.name,
+        voice_region: 'es-US', // Default region
+      });
+    } else {
+      localStorage.setItem("selectedVoiceId", voiceId);
+    }
   };
 
   return (

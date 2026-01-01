@@ -5,15 +5,37 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Home from "./pages/Home";
+import Landing from "./pages/Landing";
 import { useEffect } from "react";
 import { applyColorPalette, getPaletteById } from "./lib/colorPalettes";
 
+function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <div className="w-12 h-12 border-4 border-accent border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-muted-foreground">Cargando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Landing />;
+  }
+
+  return <Component />;
+}
+
 function Router() {
-  // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
-      <Route path={"/"} component={Home} />
+      <Route path={"/"} component={() => <ProtectedRoute component={Home} />} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
@@ -43,12 +65,14 @@ function App() {
         defaultTheme="light"
         // switchable
       >
-        <LanguageProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Router />
-          </TooltipProvider>
-        </LanguageProvider>
+        <AuthProvider>
+          <LanguageProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Router />
+            </TooltipProvider>
+          </LanguageProvider>
+        </AuthProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );

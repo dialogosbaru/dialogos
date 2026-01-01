@@ -8,7 +8,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { trpc } from '@/lib/trpc';
 
 export default function Home() {
-  const { messages, addMessage, clearHistory, isLoading } = useConversationHistory();
+  const { messages, addMessage, clearHistory, isLoading, isOnboarding, handleOnboardingResponse, currentConversationId } = useConversationHistory();
   const { isListening, isSpeaking, transcript, setTranscript, startListening, stopListening, speak, stopSpeaking } = useSpeech();
   const { t } = useLanguage();
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -36,12 +36,7 @@ export default function Home() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Agregar saludo inicial si no hay mensajes
-  useEffect(() => {
-    if (!isLoading && messages.length === 0) {
-      addMessage('leo', '¡Hola! Soy Leo, tu amigo conversacional. ¿Cómo te sientes hoy?');
-    }
-  }, [isLoading, messages.length, addMessage]);
+  // Don't add default greeting - onboarding or conversation initialization handles it
 
   // Actualizar el input cuando hay transcripción
   useEffect(() => {
@@ -60,6 +55,12 @@ export default function Home() {
       setTranscript('');
       if (inputRef.current) {
         inputRef.current.value = '';
+      }
+
+      // If in onboarding mode, handle onboarding response
+      if (isOnboarding) {
+        handleOnboardingResponse(messageText);
+        return;
       }
 
       // Obtener nivel urbano de localStorage (predeterminado 50%)

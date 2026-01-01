@@ -1,8 +1,10 @@
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { Trash2 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { Trash2, LogOut } from 'lucide-react';
 import { APP_TITLE } from '@/const';
 import OptionsPanel from '@/components/OptionsPanel';
+import { toast } from 'sonner';
 
 interface ChatHeaderProps {
   onClearHistory?: () => void;
@@ -10,6 +12,12 @@ interface ChatHeaderProps {
 
 export function ChatHeader({ onClearHistory }: ChatHeaderProps) {
   const { language, setLanguage, t } = useLanguage();
+  const { signOut, user } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+    toast.success('Sesión cerrada correctamente');
+  };
 
   return (
     <div className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
@@ -37,6 +45,17 @@ export function ChatHeader({ onClearHistory }: ChatHeaderProps) {
               <span className="hidden sm:inline">{t('chat.clear')}</span>
             </Button>
           )}
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleSignOut}
+            className="gap-2"
+            title="Cerrar sesión"
+          >
+            <LogOut className="h-4 w-4" />
+            <span className="hidden sm:inline">Salir</span>
+          </Button>
         </div>
       </div>
     </div>
