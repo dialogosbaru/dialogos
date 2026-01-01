@@ -295,13 +295,20 @@ const chatRouter = router({
         
         // Add user context if userId is provided
         if (userId) {
-          const userContext = await serverMemoryService.buildUserContext(userId);
-          if (userContext) {
-            systemPrompt += userContext;
+          try {
+            const userContext = await serverMemoryService.buildUserContext(userId);
+            if (userContext) {
+              systemPrompt += userContext;
+            }
+            
+            // Extract and save information from user message (non-blocking)
+            serverMemoryService.extractAndSaveInfo(userId, message, conversationId).catch(err => {
+              console.error('Error saving user info:', err);
+            });
+          } catch (error) {
+            console.error('Error loading user context:', error);
+            // Continue without user context if there's an error
           }
-          
-          // Extract and save information from user message
-          await serverMemoryService.extractAndSaveInfo(userId, message, conversationId);
         }
 
         // Call Groq API (OpenAI-compatible)
