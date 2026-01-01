@@ -1,8 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Supabase configuration
-const supabaseUrl = process.env.VITE_SUPABASE_URL || 'https://araehtauuglwrtzlfmiw.supabase.co';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyYWVodGF1dWdsd3J0emxmbWl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyOTQyOTIsImV4cCI6MjA4Mjg3MDI5Mn0.JmOYJ_LkFvyaIMceHBvk0goa8TmNS28pUNiypzEbXsI';
+// Use SUPABASE_URL and SUPABASE_ANON_KEY for server-side (not VITE_ prefixed)
+const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || 'https://araehtauuglwrtzlfmiw.supabase.co';
+const supabaseServiceKey = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFyYWVodGF1dWdsd3J0emxmbWl3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyOTQyOTIsImV4cCI6MjA4Mjg3MDI5Mn0.JmOYJ_LkFvyaIMceHBvk0goa8TmNS28pUNiypzEbXsI';
 
 // Create Supabase client with service key for server-side operations
 const supabase = createClient(supabaseUrl, supabaseServiceKey);

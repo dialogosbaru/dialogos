@@ -330,6 +330,13 @@
 - [x] Implementar análisis de sentimientos en mensajes del usuario
 - [x] Extraer automáticamente información relevante de conversaciones
 - [x] Guardar emociones detectadas en personal_info
-- [ ] Configurar token de GitHub para despliegue
-- [ ] Hacer push a GitHub
-- [ ] Verificar despliegue en Vercel
+- [x] Configurar token de GitHub para despliegue
+- [x] Hacer push a GitHub
+- [x] Verificar despliegue en Vercel
+
+## Corrección de Errores de Producción
+- [ ] Verificar que @supabase/supabase-js esté instalado correctamente
+- [ ] Corregir errores de carga de preferencias en producción
+- [ ] Verificar que el servidor pueda conectarse a Supabase
+- [ ] Probar sistema completo en producción
+- [ ] Hacer push de correcciones a GitHub
