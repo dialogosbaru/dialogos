@@ -3,6 +3,7 @@ import { publicProcedure, router } from '../_core/trpc.js';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { getUserProfile } from '../db.js';
 import { detectEmotionAndGetVoiceProfile, analyzeConversationEmotion } from '../utils/emotionDetection.js';
+import { serverMemoryService } from '../memoryService.js';
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
@@ -61,7 +62,7 @@ const extractUserProfile = (conversationHistory: any[]): UserProfile => {
 };
 
 // Función para crear un prompt mejorado con información del usuario y nivel urbano
-const createEnhancedSystemPrompt = (userProfile: UserProfile | null, urbanLevel: number = 50): string => {
+const createEnhancedSystemPrompt = (userProfile: UserProfile | null, urbanLevel: number = 50, userMemoryContext: string = ''): string => {
   let profileContext = '';
   
   if (userProfile && Object.keys(userProfile).length > 1) {
@@ -71,6 +72,11 @@ const createEnhancedSystemPrompt = (userProfile: UserProfile | null, urbanLevel:
     if (userProfile.favoriteTeam) profileContext += `\n- Su equipo es ${userProfile.favoriteTeam}`;
     if (userProfile.hobbies && userProfile.hobbies.length > 0) profileContext += `\n- Le gusta: ${userProfile.hobbies.join(', ')}`;
     if (userProfile.motivations && userProfile.motivations.length > 0) profileContext += `\n- Lo mueve: ${userProfile.motivations.join(', ')}`;
+  }
+  
+  // Agregar memoria del usuario desde Supabase
+  if (userMemoryContext) {
+    profileContext += userMemoryContext;
   }
   
   // Ajustar el estilo de lenguaje según el nivel urbano (0-100)
@@ -242,9 +248,14 @@ export const chatRouter = router({
         
         // Obtener el perfil del usuario de la base de datos si userId está disponible
         let dbUserProfile = null;
+        let userMemoryContext = '';
         if (input.userId) {
           dbUserProfile = await getUserProfile(input.userId);
           console.log('User profile from database:', dbUserProfile);
+          
+          // Obtener memoria del usuario desde Supabase
+          userMemoryContext = await serverMemoryService.buildUserContext(input.userId.toString());
+          console.log('User memory context from Supabase:', userMemoryContext);
         }
         
         // Extraer perfil del usuario del historial
@@ -261,8 +272,8 @@ export const chatRouter = router({
         console.log('Final urbanLevel:', urbanLevel);
         console.log('========================');
         
-        // Crear prompt mejorado con información del usuario y nivel urbano
-        const enhancedSystemPrompt = createEnhancedSystemPrompt(userProfile, urbanLevel);
+        // Crear prompt mejorado con información del usuario, nivel urbano y memoria
+        const enhancedSystemPrompt = createEnhancedSystemPrompt(userProfile, urbanLevel, userMemoryContext);
         console.log('=== SYSTEM PROMPT PREVIEW ===');
         console.log(enhancedSystemPrompt.substring(0, 300));
         console.log('============================');

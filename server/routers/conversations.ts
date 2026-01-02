@@ -32,6 +32,40 @@ export const conversationsRouter = router({
       }
     }),
 
+  // Obtener o crear la conversación principal del usuario
+  getOrCreateMainConversation: publicProcedure
+    .input(
+      z.object({
+        userId: z.number(),
+      })
+    )
+    .query(async ({ input }) => {
+      try {
+        // Buscar conversación principal existente
+        const conversations = await getUserConversations(input.userId);
+        
+        // Si ya existe una conversación, devolver la primera (la principal)
+        if (conversations && conversations.length > 0) {
+          return conversations[0];
+        }
+        
+        // Si no existe, crear una nueva conversación principal
+        const result = await createConversation(input.userId, 'Conversación Principal');
+        const conversationId = (result as any)?.insertId || 0;
+        
+        return {
+          id: conversationId,
+          userId: input.userId,
+          title: 'Conversación Principal',
+          createdAt: new Date(),
+        };
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        console.error('Error getting or creating main conversation:', errorMessage);
+        throw new Error(`Failed to get or create main conversation: ${errorMessage}`);
+      }
+    }),
+
   // Obtener todas las conversaciones de un usuario
   getAll: publicProcedure
     .input(

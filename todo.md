@@ -50,4 +50,21 @@
 - [x] Identificar todos los imports sin extensión .js
 - [x] Agregar extensiones .js a imports en api/trpc.ts
 - [x] Agregar extensiones .js a imports en server/
-- [ ] Desplegar y verificar en producción
+- [x] Desplegar y verificar en producción
+
+## Problemas Reportados por Usuario
+
+### 9. Conversaciones múltiples al cambiar de pestaña
+- [x] Revisar useConversationHistory para asegurar que cargue conversación existente
+- [x] Verificar que no se creen nuevas conversaciones al recargar
+- [ ] Probar cambio de pestañas y recarga de página
+
+### 10. Memoria no se usa en conversaciones
+- [x] Revisar cómo se construye el contexto en el chat router
+- [x] Integrar memoria del usuario en el prompt del LLM
+- [ ] Probar que Leo recuerde información guardada
+
+### 11. Error al borrar cuenta
+- [x] Verificar que userRouter esté registrado correctamente
+- [x] Corregir path del procedure deleteAccount
+- [ ] Probar borrado de cuenta en producción
