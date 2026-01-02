@@ -12,10 +12,15 @@ export const serverMemoryService = {
   // Build context for Leo from user's memory
   async buildUserContext(userId: string): Promise<string> {
     try {
+      console.log('[buildUserContext] Building context for userId:', userId);
       const [personalInfo, longTermMemories] = await Promise.all([
         this.getPersonalInfo(userId),
         this.getMemories(userId, 'long_term'),
       ]);
+
+      console.log('[buildUserContext] Personal info count:', personalInfo.length);
+      console.log('[buildUserContext] Personal info:', JSON.stringify(personalInfo, null, 2));
+      console.log('[buildUserContext] Long term memories count:', longTermMemories.length);
 
       let context = '';
 
@@ -37,6 +42,7 @@ export const serverMemoryService = {
         });
       }
 
+      console.log('[buildUserContext] Final context:', context);
       return context;
     } catch (error) {
       console.error('Error building user context:', error);

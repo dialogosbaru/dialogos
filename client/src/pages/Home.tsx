@@ -120,6 +120,23 @@ export default function Home() {
 
       <div className="flex-1 overflow-y-auto">
         <div className="max-w-4xl mx-auto px-4 py-6">
+          {/* Indicador de estado */}
+          {(isListening || isSpeaking) && (
+            <div className="sticky top-0 z-10 mb-4 flex justify-center">
+              {isListening && (
+                <div className="bg-red-500 text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 animate-pulse">
+                  <div className="w-2 h-2 bg-white rounded-full"></div>
+                  <span className="font-medium">Escuchando...</span>
+                </div>
+              )}
+              {isSpeaking && !isListening && (
+                <div className="bg-blue-500 text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2">
+                  <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                  <span className="font-medium">Leo está hablando...</span>
+                </div>
+              )}
+            </div>
+          )}
           {messages.length === 0 ? (
             <div className="flex items-center justify-center h-64">
               <p className="text-muted-foreground text-center">{t('chat.empty')}</p>

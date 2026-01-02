@@ -233,7 +233,7 @@ export const chatRouter = router({
             emotion: z.string().optional(),
           })
         ),
-        userId: z.number().optional(),
+        userId: z.string().optional(),
         urbanLevel: z.number().min(0).max(100).optional(),
       })
     )
@@ -246,15 +246,11 @@ export const chatRouter = router({
       try {
         const genAIClient = getGenAI();
         
-        // Obtener el perfil del usuario de la base de datos si userId está disponible
-        let dbUserProfile = null;
+        // Obtener memoria del usuario desde Supabase si userId está disponible
         let userMemoryContext = '';
         if (input.userId) {
-          dbUserProfile = await getUserProfile(input.userId);
-          console.log('User profile from database:', dbUserProfile);
-          
           // Obtener memoria del usuario desde Supabase
-          userMemoryContext = await serverMemoryService.buildUserContext(input.userId.toString());
+          userMemoryContext = await serverMemoryService.buildUserContext(input.userId);
           console.log('User memory context from Supabase:', userMemoryContext);
         }
         
@@ -262,8 +258,8 @@ export const chatRouter = router({
         const conversationProfile = extractUserProfile(input.conversationHistory);
         console.log('Extracted conversation profile:', conversationProfile);
         
-        // Combinar perfiles (priorizar información de la base de datos)
-        const userProfile = dbUserProfile || conversationProfile;
+        // Usar perfil extraído de la conversación
+        const userProfile = conversationProfile;
         
         // Obtener nivel urbano (predeterminado 50%)
         const urbanLevel = input.urbanLevel ?? 50;
@@ -275,7 +271,9 @@ export const chatRouter = router({
         // Crear prompt mejorado con información del usuario, nivel urbano y memoria
         const enhancedSystemPrompt = createEnhancedSystemPrompt(userProfile, urbanLevel, userMemoryContext);
         console.log('=== SYSTEM PROMPT PREVIEW ===');
-        console.log(enhancedSystemPrompt.substring(0, 300));
+        console.log(enhancedSystemPrompt.substring(0, 500));
+        console.log('=== FULL SYSTEM PROMPT ===');
+        console.log(enhancedSystemPrompt);
         console.log('============================');
         
         // Usar el modelo gemini-2.5-flash disponible en la API

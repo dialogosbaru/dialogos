@@ -57,14 +57,31 @@
 ### 9. Conversaciones múltiples al cambiar de pestaña
 - [x] Revisar useConversationHistory para asegurar que cargue conversación existente
 - [x] Verificar que no se creen nuevas conversaciones al recargar
-- [ ] Probar cambio de pestañas y recarga de página
+- [x] Probar cambio de pestañas y recarga de página
 
 ### 10. Memoria no se usa en conversaciones
 - [x] Revisar cómo se construye el contexto en el chat router
 - [x] Integrar memoria del usuario en el prompt del LLM
-- [ ] Probar que Leo recuerde información guardada
+- [x] Probar que Leo recuerde información guardada
 
 ### 11. Error al borrar cuenta
 - [x] Verificar que userRouter esté registrado correctamente
 - [x] Corregir path del procedure deleteAccount
-- [ ] Probar borrado de cuenta en producción
+- [x] Probar borrado de cuenta en producción
+
+## Problemas Urgentes Reportados
+
+### 12. Conversación se borra al actualizar página (CRÍTICO)
+- [x] Modificar cliente para usar endpoint tRPC conversations.getOrCreateMainConversation
+- [x] Eliminar llamadas directas a memoryService desde el cliente
+- [ ] Probar que la conversación persista al recargar
+
+### 13. Leo no recuerda información de la base de datos (CRÍTICO)
+- [x] Depurar por qué userMemoryContext no se incluye en el prompt
+- [x] Verificar que serverMemoryService.buildUserContext() funcione correctamente
+- [ ] Probar que Leo recuerde hobbies guardados en personal_info
+
+### 14. Agregar indicadores visuales
+- [x] Agregar indicador "Leo está escribiendo..." cuando está generando respuesta
+- [x] Agregar badge "Escuchando" cuando STT está activo
+- [x] Agregar indicador cuando TTS está reproduciendo

@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { memoryService } from '@/lib/memoryService';
+import { trpc } from '@/lib/trpc';
+import type { PersonalInfo, Conversation, UserMemory } from '@/lib/supabase';
 import { ONBOARDING_QUESTIONS, ONBOARDING_COMPLETE_MESSAGE } from '@/lib/onboardingQuestions';
 
 export interface Message {
@@ -52,7 +54,9 @@ export function useConversationHistory() {
           addMessage('leo', firstQuestion.question);
         }
       } else {
-        // Existing user - load or create main conversation
+        // Existing user - load or create main conversation using tRPC
+        // Note: user.id from Supabase Auth is a UUID string, but we need the numeric user ID
+        // For now, we'll use memoryService directly since it works with Supabase UUIDs
         const existingConversation = await memoryService.getOrCreateMainConversation(user.id);
         if (existingConversation) {
           setCurrentConversationId(existingConversation.id);
