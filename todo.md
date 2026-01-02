@@ -33,7 +33,15 @@
 - [ ] Probar borrado completo de datos
 
 ### 6. Despliegue final
-- [ ] Crear checkpoint con todas las correcciones
-- [ ] Hacer push a GitHub
-- [ ] Verificar despliegue en Vercel
+- [x] Crear checkpoint con todas las correcciones
+- [x] Hacer push a GitHub
+- [x] Verificar despliegue en Vercel
 - [ ] Probar todas las funcionalidades en producción
+
+## Error Crítico en Producción
+
+### 7. Error de JSON inválido en servidor (URGENTE)
+- [x] Identificar dónde el servidor devuelve texto plano en lugar de JSON
+- [x] Corregir manejo de errores para que siempre devuelva JSON válido
+- [x] Probar localmente la corrección
+- [ ] Desplegar y verificar en producción

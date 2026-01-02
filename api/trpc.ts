@@ -307,7 +307,8 @@ const chatRouter = router({
             });
           } catch (error) {
             console.error('Error loading user context:', error);
-            // Continue without user context if there's an error
+            console.error('Full error details:', error);
+            // Continue without user context if there's an error - don't throw
           }
         }
 
@@ -407,19 +408,43 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       req: fetchRequest,
       router: appRouter,
       createContext: async () => ({}),
+      onError({ error, type, path }) {
+        console.error(`[tRPC Error] ${type} at ${path}:`, error);
+      },
     });
 
     // Convert Fetch API Response to Vercel Response
     res.status(fetchResponse.status);
+    
+    // Ensure Content-Type is set correctly
+    if (!fetchResponse.headers.get('content-type')) {
+      res.setHeader('Content-Type', 'application/json');
+    }
     
     fetchResponse.headers.forEach((value, key) => {
       res.setHeader(key, value);
     });
 
     const body = await fetchResponse.text();
-    res.send(body);
+    
+    // Validate that the response is valid JSON before sending
+    try {
+      JSON.parse(body);
+      res.send(body);
+    } catch (jsonError) {
+      console.error("Invalid JSON response:", body);
+      res.status(500).json({ 
+        error: "Internal server error",
+        message: "Server returned invalid JSON response"
+      });
+    }
   } catch (error: any) {
     console.error("Error in tRPC handler:", error);
-    res.status(500).json({ error: error.message || "Internal server error" });
+    // Ensure we always return valid JSON
+    res.setHeader('Content-Type', 'application/json');
+    res.status(500).json({ 
+      error: error.message || "Internal server error",
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 }
