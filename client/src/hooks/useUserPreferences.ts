@@ -26,14 +26,39 @@ export function useUserPreferences() {
         .from('user_preferences')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error loading preferences:', error);
+        setLoading(false);
         return;
       }
 
-      setPreferences(data);
+      // If no preferences exist, create default ones
+      if (!data) {
+        const defaultPrefs = {
+          user_id: user.id,
+          urban_level: 50,
+          voice_name: 'es-CO-Standard-A',
+          voice_region: 'es-CO',
+          language: 'es',
+          color_palette: 'beige',
+        };
+
+        const { data: newPrefs, error: insertError } = await supabase
+          .from('user_preferences')
+          .insert(defaultPrefs)
+          .select()
+          .single();
+
+        if (insertError) {
+          console.error('Error creating preferences:', insertError);
+        } else {
+          setPreferences(newPrefs);
+        }
+      } else {
+        setPreferences(data);
+      }
     } catch (error) {
       console.error('Error loading preferences:', error);
     } finally {
