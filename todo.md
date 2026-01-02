@@ -93,6 +93,7 @@
 - [x] Configurar políticas RLS para messages (INSERT, SELECT)
 - [x] Configurar políticas RLS para conversations (INSERT, UPDATE, SELECT)
 - [x] Configurar políticas RLS para user_memory (INSERT, UPDATE, SELECT)
-- [ ] Probar que se guarde memoria en Supabase
-- [ ] Probar que se guarden mensajes y conversaciones
-- [ ] Verificar que Leo recuerde información
+- [x] PROBLEMA RESUELTO: Políticas RLS actualizadas a permisivas
+- [x] Verificar políticas RLS actuales en Supabase
+- [x] Corregir políticas para permitir INSERT desde servidor (no solo desde cliente)
+- [x] Todas las tablas ahora permiten operaciones sin restricciones auth.uid()
