@@ -50,6 +50,35 @@ export const memoryService = {
     }
   },
 
+  async getOrCreateMainConversation(userId: string): Promise<Conversation | null> {
+    try {
+      // Try to get the most recent conversation
+      const { data: conversations, error } = await supabase
+        .from('conversations')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (error) throw error;
+
+      // If conversation exists, return it
+      if (conversations && conversations.length > 0) {
+        return conversations[0];
+      }
+
+      // Otherwise create a new one
+      return await this.createConversation(userId, 'Conversación con Leo');
+    } catch (error) {
+      console.error('Error getting or creating main conversation:', error);
+      return null;
+    }
+  },
+
+  async getConversationMessages(conversationId: string): Promise<Message[]> {
+    return await this.getMessages(conversationId);
+  },
+
   // Messages
   async saveMessage(conversationId: string, role: 'user' | 'assistant', content: string, emotion?: string): Promise<Message | null> {
     try {

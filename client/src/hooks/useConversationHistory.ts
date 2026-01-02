@@ -52,10 +52,23 @@ export function useConversationHistory() {
           addMessage('leo', firstQuestion.question);
         }
       } else {
-        // Existing user - create new conversation
-        const conversation = await memoryService.createConversation(user.id);
-        if (conversation) {
-          setCurrentConversationId(conversation.id);
+        // Existing user - load or create main conversation
+        const existingConversation = await memoryService.getOrCreateMainConversation(user.id);
+        if (existingConversation) {
+          setCurrentConversationId(existingConversation.id);
+          
+          // Load previous messages
+          const previousMessages = await memoryService.getConversationMessages(existingConversation.id);
+          if (previousMessages && previousMessages.length > 0) {
+            const formattedMessages: Message[] = previousMessages.map((msg: any) => ({
+              id: msg.id,
+              sender: msg.role === 'assistant' ? 'leo' : 'user',
+              text: msg.content,
+              timestamp: new Date(msg.created_at).getTime(),
+              emotion: msg.emotion,
+            }));
+            setMessages(formattedMessages);
+          }
         }
       }
     } catch (error) {

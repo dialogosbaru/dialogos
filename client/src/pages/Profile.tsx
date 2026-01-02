@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Brain, MessageSquare, User, Trash2 } from 'lucide-react';
 import { useLocation } from 'wouter';
+import { trpc } from '@/lib/trpc';
 
 export default function Profile() {
   const { user, signOut } = useAuth();
@@ -55,6 +56,28 @@ export default function Profile() {
   const handleSignOut = async () => {
     await signOut();
     setLocation('/');
+  };
+
+  const deleteAccountMutation = trpc.user.deleteAccount.useMutation();
+
+  const handleDeleteAccount = async () => {
+    if (!confirm('¿Estás seguro de que deseas borrar tu cuenta? Esta acción no se puede deshacer y se eliminarán todos tus datos, conversaciones y memoria.')) {
+      return;
+    }
+
+    if (!confirm('Esta es tu última oportunidad. ¿Realmente deseas borrar tu cuenta de forma permanente?')) {
+      return;
+    }
+
+    try {
+      await deleteAccountMutation.mutateAsync();
+      alert('Cuenta borrada exitosamente');
+      await signOut();
+      setLocation('/');
+    } catch (error) {
+      console.error('Error borrando cuenta:', error);
+      alert('Error al borrar la cuenta: ' + (error instanceof Error ? error.message : 'Error desconocido'));
+    }
   };
 
   if (loading) {
@@ -261,6 +284,34 @@ export default function Profile() {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Danger Zone */}
+        <Card className="mt-8 border-destructive">
+          <CardHeader>
+            <CardTitle className="text-destructive">Zona de Peligro</CardTitle>
+            <CardDescription>
+              Acciones irreversibles que afectan tu cuenta
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium">Borrar cuenta</p>
+                <p className="text-sm text-muted-foreground">
+                  Elimina permanentemente tu cuenta y todos tus datos
+                </p>
+              </div>
+              <Button
+                variant="destructive"
+                onClick={handleDeleteAccount}
+                className="gap-2"
+              >
+                <Trash2 className="h-4 w-4" />
+                Borrar Cuenta
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </main>
     </div>
   );

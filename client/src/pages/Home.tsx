@@ -23,9 +23,7 @@ export default function Home() {
       addMessage('leo', response.text);
       
       // Hablar la respuesta de Leo
-      if (window.speechSynthesis) {
-        speak(response.text);
-      }
+      speak(response.text);
     },
     onError: (error) => {
       console.error('Error getting response from Gemini:', error);

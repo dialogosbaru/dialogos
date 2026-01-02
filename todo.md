@@ -1,9 +1,39 @@
 # Diálogos - TODO
 
-## Corrección de Políticas RLS
-- [x] Revisar políticas RLS actuales en Supabase
-- [x] Verificar que auth.uid() funcione correctamente
-- [x] Actualizar políticas para permitir acceso correcto a usuarios autenticados
-- [x] Probar carga de preferencias en producción
-- [ ] Probar envío de mensajes en producción
-- [ ] Hacer push de correcciones finales
+## Correcciones Críticas
+
+### 1. Error 500 al recargar página
+- [x] Investigar causa del error 500 en endpoint de chat después de recargar
+- [x] Revisar cómo se maneja conversationId después de recargar
+- [x] Corregir manejo de contexto de memoria en servidor
+- [ ] Probar envío de mensajes después de recargar
+
+### 2. Sistema de conversación única
+- [x] Modificar lógica para usar una sola conversación continua por usuario
+- [x] Eliminar creación de nuevas conversaciones al cambiar de pestaña
+- [x] Cargar conversación existente al iniciar sesión
+- [ ] Probar continuidad de conversación entre sesiones
+
+### 3. TTS no funciona
+- [x] Revisar implementación de text-to-speech
+- [x] Verificar que el audio se reproduzca correctamente
+- [ ] Probar con diferentes navegadores
+- [ ] Agregar indicador visual de reproducción de audio
+
+### 4. STT duplica texto
+- [x] Revisar implementación de speech-to-text
+- [x] Corregir duplicación de texto durante reconocimiento
+- [x] Implementar lógica de reemplazo en lugar de append
+- [ ] Probar reconocimiento de voz con diferentes frases
+
+### 5. Opción de borrar cuenta
+- [x] Agregar botón "Borrar cuenta" en página de perfil
+- [x] Implementar endpoint para borrar todos los datos del usuario
+- [x] Agregar confirmación antes de borrar
+- [ ] Probar borrado completo de datos
+
+### 6. Despliegue final
+- [ ] Crear checkpoint con todas las correcciones
+- [ ] Hacer push a GitHub
+- [ ] Verificar despliegue en Vercel
+- [ ] Probar todas las funcionalidades en producción

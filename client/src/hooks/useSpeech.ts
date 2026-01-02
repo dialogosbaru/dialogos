@@ -130,24 +130,24 @@ export function useSpeech() {
       };
 
       recognition.onresult = (event: SpeechRecognitionEvent) => {
+        let finalTranscript = '';
         let interimTranscript = '';
 
-        for (let i = event.results.length - 1; i >= 0; i--) {
+        for (let i = 0; i < event.results.length; i++) {
           const transcript = event.results[i][0].transcript;
 
           if (event.results[i].isFinal) {
-            setTranscript((prev) => prev + transcript + ' ');
+            finalTranscript += transcript + ' ';
           } else {
             interimTranscript += transcript;
           }
         }
 
-        if (interimTranscript) {
-          setTranscript((prev) => {
-            const parts = prev.split(' ');
-            parts[parts.length - 1] = interimTranscript;
-            return parts.join(' ');
-          });
+        // Solo actualizar con el texto final, sin acumular intermedios
+        if (finalTranscript) {
+          setTranscript(finalTranscript.trim());
+        } else if (interimTranscript) {
+          setTranscript(interimTranscript);
         }
       };
 
