@@ -44,4 +44,10 @@
 - [x] Identificar dónde el servidor devuelve texto plano en lugar de JSON
 - [x] Corregir manejo de errores para que siempre devuelva JSON válido
 - [x] Probar localmente la corrección
+- [x] Desplegar y verificar en producción
+
+### 8. Error ERR_MODULE_NOT_FOUND en producción (CRÍTICO)
+- [x] Identificar todos los imports sin extensión .js
+- [x] Agregar extensiones .js a imports en api/trpc.ts
+- [x] Agregar extensiones .js a imports en server/
 - [ ] Desplegar y verificar en producción

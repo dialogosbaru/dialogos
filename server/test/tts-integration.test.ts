@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { synthesizeSpeech } from '../_core/googleTTS';
+import { synthesizeSpeech } from '../_core/googleTTS.js';
 
 describe('Google Cloud TTS Integration', () => {
   it('should synthesize speech with neutral emotion', async () => {

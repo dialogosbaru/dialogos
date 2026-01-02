@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { publicProcedure, router } from '../_core/trpc';
-import { synthesizeSpeech, listAvailableVoices } from '../_core/googleTTS';
+import { publicProcedure, router } from '../_core/trpc.js';
+import { synthesizeSpeech, listAvailableVoices } from '../_core/googleTTS.js';
 
 /**
  * Router de Text-to-Speech usando Google Cloud TTS con WaveNet

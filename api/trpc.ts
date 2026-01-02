@@ -4,7 +4,7 @@ import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import superjson from "superjson";
 import { z } from "zod";
 import { TextToSpeechClient } from "@google-cloud/text-to-speech";
-import { serverMemoryService } from "../server/memoryService";
+import { serverMemoryService } from "../server/memoryService.js";
 
 // Constants
 const COOKIE_NAME = "session";

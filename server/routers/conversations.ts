@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { publicProcedure, router } from '../_core/trpc';
+import { publicProcedure, router } from '../_core/trpc.js';
 import {
   createConversation,
   getUserConversations,
@@ -7,7 +7,7 @@ import {
   saveMessage,
   saveUserProfile,
   getUserProfile,
-} from '../db';
+} from '../db.js';
 
 export const conversationsRouter = router({
   // Crear una nueva conversación

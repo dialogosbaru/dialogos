@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { publicProcedure, router } from '../_core/trpc';
-import { getUserProfile, saveUserProfile } from '../db';
+import { publicProcedure, router } from '../_core/trpc.js';
+import { getUserProfile, saveUserProfile } from '../db.js';
 
 // Definir las 5 preguntas iniciales
 export const INITIAL_QUESTIONS = [

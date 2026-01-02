@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import { publicProcedure, router } from '../_core/trpc';
+import { publicProcedure, router } from '../_core/trpc.js';
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { getUserProfile } from '../db';
-import { detectEmotionAndGetVoiceProfile, analyzeConversationEmotion } from '../utils/emotionDetection';
+import { getUserProfile } from '../db.js';
+import { detectEmotionAndGetVoiceProfile, analyzeConversationEmotion } from '../utils/emotionDetection.js';
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
