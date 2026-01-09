@@ -120,3 +120,12 @@
 - [x] Implementar panel de recordatorios en página de perfil
 - [x] Sistema base de recordatorios completado (notificaciones push requieren servicio externo)
 - [x] Crear checkpoint y desplegar en Vercel
+
+## Error de Producción - Módulo no encontrado
+
+### 18. Corregir error ERR_MODULE_NOT_FOUND con @shared/const
+- [x] Identificar todos los archivos que importan @shared/const
+- [x] Reemplazar imports de @shared/const por rutas relativas
+- [x] Reemplazar imports de @shared/_core/errors por rutas relativas
+- [x] Verificar que el servidor funcione localmente
+- [x] Crear checkpoint y desplegar en Vercel
