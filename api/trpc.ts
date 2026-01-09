@@ -5,6 +5,8 @@ import superjson from "superjson";
 import { z } from "zod";
 import { TextToSpeechClient } from "@google-cloud/text-to-speech";
 import { serverMemoryService } from "../server/memoryService.js";
+import { reminderRouter } from "../server/routers/reminderRouter.js";
+import { reminderService } from "../server/reminderService.js";
 
 // Constants
 const COOKIE_NAME = "session";
@@ -317,6 +319,13 @@ const chatRouter = router({
             serverMemoryService.extractAndSaveInfo(userId, message, conversationId).catch(err => {
               console.error('Error saving user info:', err);
             });
+            
+            // Detect goals and create automatic reminders (non-blocking)
+            if (conversationId) {
+              reminderService.detectAndCreateGoalReminders(userId, message, conversationId).catch(err => {
+                console.error('Error creating goal reminders:', err);
+              });
+            }
           } catch (error) {
             console.error('Error loading user context:', error);
             console.error('Full error details:', error);
@@ -399,6 +408,7 @@ const appRouter = router({
   chat: chatRouter,
   auth: authRouter,
   tts: ttsRouter,
+  reminders: reminderRouter,
 });
 
 export type AppRouter = typeof appRouter;

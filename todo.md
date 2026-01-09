@@ -108,3 +108,15 @@
 - [x] Implementar seguimiento de metas y objetivos mencionados
 - [x] Probar nuevo nivel de consejo con diferentes escenarios
 - [x] Crear checkpoint con mejoras implementadas
+
+## Sistema de Recordatorios
+
+### 17. Implementar sistema completo de recordatorios
+- [x] Diseñar esquema de base de datos para tabla reminders
+- [x] Crear migración de Supabase para tabla reminders
+- [x] Implementar router tRPC para CRUD de recordatorios
+- [x] Agregar detección automática de metas en conversaciones
+- [x] Crear recordatorios automáticos cuando Leo detecta metas
+- [x] Implementar panel de recordatorios en página de perfil
+- [x] Sistema base de recordatorios completado (notificaciones push requieren servicio externo)
+- [x] Crear checkpoint y desplegar en Vercel
