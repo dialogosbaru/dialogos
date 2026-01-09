@@ -97,3 +97,14 @@
 - [x] Verificar políticas RLS actuales en Supabase
 - [x] Corregir políticas para permitir INSERT desde servidor (no solo desde cliente)
 - [x] Todas las tablas ahora permiten operaciones sin restricciones auth.uid()
+
+## Mejora del Nivel de Consejo de Leo
+
+### 16. Aumentar nivel de consejo y hacerlo más propositivo
+- [x] Actualizar prompt del sistema para consejos más elaborados
+- [x] Agregar estructura de pasos accionables en respuestas
+- [x] Implementar preguntas reflexivas que profundicen conversaciones
+- [x] Agregar análisis de múltiples perspectivas
+- [x] Implementar seguimiento de metas y objetivos mencionados
+- [x] Probar nuevo nivel de consejo con diferentes escenarios
+- [x] Crear checkpoint con mejoras implementadas
