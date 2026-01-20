@@ -1,0 +1,41 @@
+{
+  "version": "7",
+  "dialect": "mysql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1763326256628,
+      "tag": "0000_mature_gunslinger",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1763328594780,
+      "tag": "0001_late_fantastic_four",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1768700374851,
+      "tag": "0002_keen_franklin_richards",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1768700714597,
+      "tag": "0003_lucky_sunfire",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1768701974114,
+      "tag": "0004_slim_sentry",
+      "breakpoints": true
+    }
+  ]
+}
